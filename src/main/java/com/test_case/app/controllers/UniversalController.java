@@ -530,7 +530,9 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                            dto1.setPcModelList(pcModelRepository.findAll(specification));
+                            List<PCModel> smartPhoneModelList = new ArrayList<>();
+                            pcModelRepository.findAll().forEach(smartPhoneModelList::add);
+                            dto1.setPcModelList(smartPhoneModelList);
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {

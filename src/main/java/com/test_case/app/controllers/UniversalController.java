@@ -329,30 +329,30 @@ public class UniversalController {
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
                             if (specification.getCriteria() != null) {
-                                return new ResponseEntity<>(tvModelRepository.findAll(specification), HttpStatus.OK);
+                                dto1.setTvModelList((List<TVModel>) tvModelRepository.findAll(specification));
                             } else {
-                                return new ResponseEntity<>(tvModelRepository.findAll(), HttpStatus.OK);
+                                dto1.setTvModelList((List<TVModel>) tvModelRepository.findAll());
                             }
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
                                 } else {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
                                 } else {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
                                 }
                             }
                         }
@@ -398,53 +398,32 @@ public class UniversalController {
                                     specification.and(modelSpecification);
                                 }
                             }
-                            if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                                if (specification.getCriteria() != null) {
-                                    fridgeModelRepository.findAll(specification);
-                                } else {
-                                    fridgeModelRepository.findAll();
-                                }
-                            } else {
-                                if (dto.isSort_num()) {
-                                    if (dto.isSort_num()) {
-                                        fridgeModelRepository.findAll(specification).sort(Comparator.comparingInt(FridgeModel::getModelPrice));
-                                    } else {
-                                        fridgeModelRepository.findAll(specification).sort(Comparator.comparingInt(FridgeModel::getModelPrice).reversed());
-                                    }
-                                } else {
-                                    if (dto.isSort_alphabet()) {
-                                        fridgeModelRepository.findAll(specification).sort(Comparator.comparing(FridgeModel::getModelName));
-                                    } else {
-                                        fridgeModelRepository.findAll(specification).sort(Comparator.comparing(FridgeModel::getModelName).reversed());
-                                    }
-                                }
-                            }
                             if (!dto.isSort_alphabet() && dto.isSort_num()) {
                                 if (specification.getCriteria() != null) {
-                                    return new ResponseEntity<>(fridgeModelRepository.findAll(specification), HttpStatus.OK);
+                                    dto1.setFridgeModelList((List<FridgeModel>) fridgeModelRepository.findAll(specification));
                                 } else {
-                                    return new ResponseEntity<>(fridgeModelRepository.findAll(), HttpStatus.OK);
+                                    dto1.setFridgeModelList((List<FridgeModel>) fridgeModelRepository.findAll());
                                 }
                             } else {
                                 if (dto.isSort_num()) {
                                     if (dto.isSort_num()) {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice));
-                                        return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
                                     } else {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice).reversed());
-                                        return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
                                     }
                                 } else {
                                     if (dto.isSort_alphabet()) {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName));
-                                        return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
                                     } else {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName).reversed());
-                                        return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
                                     }
                                 }
                             }
@@ -494,30 +473,30 @@ public class UniversalController {
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
                             if (specification.getCriteria() != null) {
-                                return new ResponseEntity<>(hooverModelRepository.findAll(specification), HttpStatus.OK);
+                                dto1.setHooverModelList((List<HooverModel>) hooverModelRepository.findAll(specification));
                             } else {
-                                return new ResponseEntity<>(hooverModelRepository.findAll(), HttpStatus.OK);
+                                dto1.setHooverModelList((List<HooverModel>) hooverModelRepository.findAll());
                             }
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
                                 } else {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
                                 } else {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
                                 }
                             }
                         }
@@ -564,30 +543,30 @@ public class UniversalController {
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
                             if (specification.getCriteria() != null) {
-                                return new ResponseEntity<>(pcModelRepository.findAll(specification), HttpStatus.OK);
+                                dto1.setPcModelList((List<PCModel>) pcModelRepository.findAll(specification));
                             } else {
-                                return new ResponseEntity<>(pcModelRepository.findAll(), HttpStatus.OK);
+                                dto1.setPcModelList((List<PCModel>) pcModelRepository.findAll());
                             }
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
                                 } else {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
                                 } else {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
                                 }
                             }
                         }
@@ -634,30 +613,30 @@ public class UniversalController {
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
                             if (specification.getCriteria() != null) {
-                                return new ResponseEntity<>(smartPhoneModelRepository.findAll(specification), HttpStatus.OK);
+                                dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelRepository.findAll(specification));
                             } else {
-                                return new ResponseEntity<>(smartPhoneModelRepository.findAll(), HttpStatus.OK);
+                                dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelRepository.findAll());
                             }
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
                                 } else {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName));
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
                                 } else {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName).reversed());
-                                    return new ResponseEntity<>(smartPhoneModelList, HttpStatus.OK);
+                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
                                 }
                             }
                         }

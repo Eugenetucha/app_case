@@ -18,32 +18,40 @@ public class ModelSpecification<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-        switch (criteria.getType()) {
-            case "VARCHAR": {
-                return criteriaBuilder.like(
-                        root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
-            }
-            case "BOOLEAN": {
-                if (criteria.getValue().equals("true")) {
-                    return criteriaBuilder.isTrue(
-                            root.get(criteria.getKey()));
-                } else {
-                    return criteriaBuilder.isFalse(
-                            root.get(criteria.getKey()));
+        if(criteria == null) {
+            return null;
+        }
+        try {
+            switch (criteria.getType()) {
+                case "VARCHAR": {
+                    return criteriaBuilder.like(
+                            root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+                }
+                case "BOOLEAN": {
+                    if (criteria.getValue().equals("true")) {
+                        return criteriaBuilder.isTrue(
+                                root.get(criteria.getKey()));
+                    } else {
+                        return criteriaBuilder.isFalse(
+                                root.get(criteria.getKey()));
+                    }
+                }
+                case "INT_CHECK_1": {
+                    return criteriaBuilder.greaterThan(
+                            root.get(criteria.getKey()), criteria.getValue());
+                }
+                case "INT_CHECK_2": {
+                    return criteriaBuilder.lessThan(
+                            root.get(criteria.getKey()), criteria.getValue());
+                }
+                case "INT": {
+                    return criteriaBuilder.equal(
+                            root.get(criteria.getKey()), criteria.getValue());
                 }
             }
-            case "INT_CHECK_1": {
-                return criteriaBuilder.greaterThan(
-                        root.get(criteria.getKey()), criteria.getValue());
-            }
-            case "INT_CHECK_2": {
-                return criteriaBuilder.lessThan(
-                        root.get(criteria.getKey()), criteria.getValue());
-            }
-            case "INT": {
-                return criteriaBuilder.equal(
-                        root.get(criteria.getKey()), criteria.getValue());
-            }
+        }catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
         }
         return null;
     }

@@ -395,7 +395,13 @@ public class UniversalController {
                                 }
                             }
                             if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                                dto1.setFridgeModelList(fridgeModelRepository.findAll(specification));
+                                List<FridgeModel> smartPhoneModelList = new ArrayList<>();
+                                for(FridgeModel fridgeModel : fridgeModelRepository.findAll()){
+                                    //todo убрать loop
+                                    fridgeModel.setC_fridge(null);
+                                    smartPhoneModelList.add(fridgeModel);
+                                }
+                                dto1.setFridgeModelList(smartPhoneModelList);
                             } else {
                                 if (dto.isSort_num()) {
                                     if (dto.isSort_num()) {

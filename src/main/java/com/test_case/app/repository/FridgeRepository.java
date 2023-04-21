@@ -12,5 +12,4 @@ import java.util.List;
 public interface FridgeRepository extends JpaRepository<Fridge, Long> {
 
     public List<Fridge> findByName(String name);
-
 }

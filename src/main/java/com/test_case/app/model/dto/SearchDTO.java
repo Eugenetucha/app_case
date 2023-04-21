@@ -9,10 +9,10 @@ public class SearchDTO {
     String type;
     String name;
     String color;
-    Integer price_l;
-    Boolean sort_num;
-    Boolean sort_alphabet;
-    Integer price_h;
+    int price_l;
+    boolean sort_num;
+    boolean sort_alphabet;
+    int price_h;
     TVModelDTO tvModel;
     SmartPhoneModelDTO smartPhoneModel;
     PCModelDTO pcModel;

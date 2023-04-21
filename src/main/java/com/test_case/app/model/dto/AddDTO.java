@@ -1,7 +1,6 @@
 package com.test_case.app.model.dto;
 
 import com.test_case.app.model.entity.*;
-import com.test_case.app.model.entity.entity_model.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +12,9 @@ public class AddDTO {
     PC pc;
     Hoover hoover;
     Fridge fridge;
-    TVModel tvModel;
-    SmartPhoneModel smartPhoneModel;
-    PCModel pcModel;
-    HooverModel hooverModel;
-    FridgeModel fridgeModel;
+    TVModelDTO tvModel;
+    SmartPhoneModelDTO smartPhoneModel;
+    PCModelDTO pcModel;
+    HooverModelDTO hooverModel;
+    FridgeModelDTO fridgeModel;
 }

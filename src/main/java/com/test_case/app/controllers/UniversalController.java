@@ -12,16 +12,16 @@ import com.test_case.app.util.spec.ModelSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@Controller
+@RestController
 public class UniversalController {
     @Autowired
     PCRepository pcRepository;
@@ -55,7 +55,17 @@ public class UniversalController {
         }
         if (dto.getFridgeModel() != null) {
             try {
-                fridgeModelRepository.save(dto.getFridgeModel());
+                FridgeModel fridgeModel = new FridgeModel();
+                fridgeModel.setC_fridge(fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get());
+                fridgeModel.setModelName(dto.getFridgeModel().getModelName());
+                fridgeModel.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
+                fridgeModel.setModelColor(dto.getFridgeModel().getModelColor());
+                fridgeModel.setModelSize(dto.getFridgeModel().getModelSize());
+                fridgeModel.setModelPrice(dto.getFridgeModel().getModelPrice());
+                fridgeModel.setModelNumberOfDoors(dto.getFridgeModel().getModelNumberOfDoors());
+                fridgeModel.setModelCompressorType(dto.getFridgeModel().getModelCompressorType());
+                fridgeModel.setModelAvailability(dto.getFridgeModel().isModelAvailability());
+                fridgeModelRepository.save(fridgeModel);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
             }
@@ -69,7 +79,17 @@ public class UniversalController {
         }
         if (dto.getHooverModel() != null) {
             try {
-                hooverModelRepository.save(dto.getHooverModel());
+                HooverModel model = new HooverModel();
+                model.setC_hoover(hooverRepository.findById(dto.getHooverModel().getHoover_id()).get());
+                model.setModelName(dto.getFridgeModel().getModelName());
+                model.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
+                model.setModelColor(dto.getFridgeModel().getModelColor());
+                model.setModelSize(dto.getFridgeModel().getModelSize());
+                model.setModelPrice(dto.getFridgeModel().getModelPrice());
+                model.setModelNumberOfModes(dto.getHooverModel().getModelNumberOfModes());
+                model.setModelVolume(dto.getHooverModel().getModelVolume());
+                model.setModelAvailability(dto.getFridgeModel().isModelAvailability());
+                hooverModelRepository.save(model);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
             }
@@ -83,7 +103,17 @@ public class UniversalController {
         }
         if (dto.getTvModel() != null) {
             try {
-                tvModelRepository.save(dto.getTvModel());
+                TVModel model = new TVModel();
+                model.setC_tv(tvRepository.findById(dto.getTvModel().getTv_id()).get());
+                model.setModelName(dto.getTvModel().getModelName());
+                model.setModelSerialNumber(dto.getTvModel().getModelSerialNumber());
+                model.setModelColor(dto.getTvModel().getModelColor());
+                model.setModelSize(dto.getTvModel().getModelSize());
+                model.setModelPrice(dto.getTvModel().getModelPrice());
+                model.setModelCategory(dto.getTvModel().getModelCategory());
+                model.setModelTechnology(dto.getTvModel().getModelTechnology());
+                model.setModelAvailability(dto.getTvModel().isModelAvailability());
+                tvModelRepository.save(model);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
             }
@@ -97,7 +127,17 @@ public class UniversalController {
         }
         if (dto.getPcModel() != null) {
             try {
-                pcModelRepository.save(dto.getPcModel());
+                PCModel model = new PCModel();
+                model.setC_pc(pcRepository.findById(dto.getPcModel().getPc_id()).get());
+                model.setModelName(dto.getPcModel().getModelName());
+                model.setModelSerialNumber(dto.getPcModel().getModelSerialNumber());
+                model.setModelColor(dto.getPcModel().getModelColor());
+                model.setModelSize(dto.getPcModel().getModelSize());
+                model.setModelPrice(dto.getPcModel().getModelPrice());
+                model.setModelCategory(dto.getPcModel().getModelCategory());
+                model.setModelTypeOfProcessor(dto.getPcModel().getModelTypeOfProcessor());
+                model.setModelAvailability(dto.getPcModel().isModelAvailability());
+                pcModelRepository.save(model);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
             }
@@ -111,7 +151,17 @@ public class UniversalController {
         }
         if (dto.getSmartPhoneModel() != null) {
             try {
-                smartPhoneModelRepository.save(dto.getSmartPhoneModel());
+                SmartPhoneModel model = new SmartPhoneModel();
+                model.setC_smartPhone(smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get());
+                model.setModelName(dto.getSmartPhoneModel().getModelName());
+                model.setModelSerialNumber(dto.getSmartPhoneModel().getModelSerialNumber());
+                model.setModelColor(dto.getSmartPhoneModel().getModelColor());
+                model.setModelSize(dto.getSmartPhoneModel().getModelSize());
+                model.setModelPrice(dto.getSmartPhoneModel().getModelPrice());
+                model.setModelMemory(dto.getSmartPhoneModel().getModelMemory());
+                model.setModelNumberOfCameras(dto.getSmartPhoneModel().getModelNumberOfCameras());
+                model.setModelAvailability(dto.getSmartPhoneModel().isModelAvailability());
+                smartPhoneModelRepository.save(model);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
             }
@@ -119,7 +169,6 @@ public class UniversalController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO добавить обработку исключений
     @GetMapping("/get")
     public ResponseEntity<?> get(@RequestBody SearchDTO dto) {
         SearchResponseDTO dto1 = new SearchResponseDTO();
@@ -203,7 +252,7 @@ public class UniversalController {
         } else {
             if (dto.getType() != null) {
                 switch (dto.getType()) {
-                    case "TV" : {
+                    case "TV": {
                         ModelSpecification<TVModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
                             ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
@@ -261,7 +310,7 @@ public class UniversalController {
                             }
                         }
                     }
-                    case "Fridge" : {
+                    case "Fridge": {
                         ModelSpecification<FridgeModel> specification = new ModelSpecification<FridgeModel>(null);
                         if (dto.getColor() != null) {
                             ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<FridgeModel>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
@@ -319,7 +368,7 @@ public class UniversalController {
                             }
                         }
                     }
-                    case "Hoover" : {
+                    case "Hoover": {
                         ModelSpecification<HooverModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
                             ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
@@ -377,7 +426,7 @@ public class UniversalController {
                             }
                         }
                     }
-                    case "PC" : {
+                    case "PC": {
                         ModelSpecification<PCModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
                             ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
@@ -435,7 +484,7 @@ public class UniversalController {
                             }
                         }
                     }
-                    case "SmartPhone" : {
+                    case "SmartPhone": {
                         ModelSpecification<SmartPhoneModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
                             ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
@@ -494,6 +543,8 @@ public class UniversalController {
                         }
                     }
                 }
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(null, HttpStatus.OK);

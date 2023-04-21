@@ -328,31 +328,27 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
-                            if (specification.getCriteria() != null) {
-                                dto1.setTvModelList((List<TVModel>) tvModelRepository.findAll(specification));
-                            } else {
-                                dto1.setTvModelList((List<TVModel>) tvModelRepository.findAll());
-                            }
+                            dto1.setTvModelList(tvModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice));
-                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
+                                    dto1.setTvModelList(smartPhoneModelList);
                                 } else {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice).reversed());
-                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
+                                    dto1.setTvModelList(smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName));
-                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
+                                    dto1.setTvModelList(smartPhoneModelList);
                                 } else {
                                     List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName).reversed());
-                                    dto1.setTvModelList((List<TVModel>) smartPhoneModelList);
+                                    dto1.setTvModelList(smartPhoneModelList);
                                 }
                             }
                         }
@@ -399,31 +395,27 @@ public class UniversalController {
                                 }
                             }
                             if (!dto.isSort_alphabet() && dto.isSort_num()) {
-                                if (specification.getCriteria() != null) {
-                                    dto1.setFridgeModelList((List<FridgeModel>) fridgeModelRepository.findAll(specification));
-                                } else {
-                                    dto1.setFridgeModelList((List<FridgeModel>) fridgeModelRepository.findAll());
-                                }
+                                dto1.setFridgeModelList(fridgeModelRepository.findAll(specification));
                             } else {
                                 if (dto.isSort_num()) {
                                     if (dto.isSort_num()) {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice));
-                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
+                                        dto1.setFridgeModelList(smartPhoneModelList);
                                     } else {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice).reversed());
-                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
+                                        dto1.setFridgeModelList(smartPhoneModelList);
                                     }
                                 } else {
                                     if (dto.isSort_alphabet()) {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName));
-                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
+                                        dto1.setFridgeModelList(smartPhoneModelList);
                                     } else {
                                         List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                         smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName).reversed());
-                                        dto1.setFridgeModelList((List<FridgeModel>) smartPhoneModelList);
+                                        dto1.setFridgeModelList(smartPhoneModelList);
                                     }
                                 }
                             }
@@ -472,31 +464,27 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
-                            if (specification.getCriteria() != null) {
-                                dto1.setHooverModelList((List<HooverModel>) hooverModelRepository.findAll(specification));
-                            } else {
-                                dto1.setHooverModelList((List<HooverModel>) hooverModelRepository.findAll());
-                            }
+                            dto1.setHooverModelList(hooverModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice));
-                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
+                                    dto1.setHooverModelList(smartPhoneModelList);
                                 } else {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice).reversed());
-                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
+                                    dto1.setHooverModelList(smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName));
-                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
+                                    dto1.setHooverModelList(smartPhoneModelList);
                                 } else {
                                     List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName).reversed());
-                                    dto1.setHooverModelList((List<HooverModel>) smartPhoneModelList);
+                                    dto1.setHooverModelList(smartPhoneModelList);
                                 }
                             }
                         }
@@ -542,31 +530,27 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
-                            if (specification.getCriteria() != null) {
-                                dto1.setPcModelList((List<PCModel>) pcModelRepository.findAll(specification));
-                            } else {
-                                dto1.setPcModelList((List<PCModel>) pcModelRepository.findAll());
-                            }
+                            dto1.setPcModelList(pcModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice));
-                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
+                                    dto1.setPcModelList(smartPhoneModelList);
                                 } else {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice).reversed());
-                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
+                                    dto1.setPcModelList(smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName));
-                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
+                                    dto1.setPcModelList(smartPhoneModelList);
                                 } else {
                                     List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName).reversed());
-                                    dto1.setPcModelList((List<PCModel>) smartPhoneModelList);
+                                    dto1.setPcModelList(smartPhoneModelList);
                                 }
                             }
                         }
@@ -612,31 +596,27 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && dto.isSort_num()) {
-                            if (specification.getCriteria() != null) {
-                                dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelRepository.findAll(specification));
-                            } else {
-                                dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelRepository.findAll());
-                            }
+                            dto1.setSmartPhoneModelList(smartPhoneModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
                                 if (dto.isSort_num()) {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice));
-                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
+                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
                                 } else {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice).reversed());
-                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
+                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
                                 }
                             } else {
                                 if (dto.isSort_alphabet()) {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName));
-                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
+                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
                                 } else {
                                     List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                                     smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName).reversed());
-                                    dto1.setSmartPhoneModelList((List<SmartPhoneModel>) smartPhoneModelList);
+                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
                                 }
                             }
                         }

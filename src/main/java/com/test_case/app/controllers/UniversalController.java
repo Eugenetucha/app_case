@@ -327,7 +327,7 @@ public class UniversalController {
                                 specification.and(modelSpecification);
                             }
                         }
-                        if (!dto.isSort_alphabet() && dto.isSort_num()) {
+                        if (!dto.isSort_alphabet() && !dto.isSort_num()) {
                             dto1.setTvModelList(tvModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
@@ -394,7 +394,7 @@ public class UniversalController {
                                     specification.and(modelSpecification);
                                 }
                             }
-                            if (!dto.isSort_alphabet() && dto.isSort_num()) {
+                            if (!dto.isSort_alphabet() && !dto.isSort_num()) {
                                 dto1.setFridgeModelList(fridgeModelRepository.findAll(specification));
                             } else {
                                 if (dto.isSort_num()) {
@@ -463,7 +463,7 @@ public class UniversalController {
                                 specification.and(modelSpecification);
                             }
                         }
-                        if (!dto.isSort_alphabet() && dto.isSort_num()) {
+                        if (!dto.isSort_alphabet() && !dto.isSort_num()) {
                             dto1.setHooverModelList(hooverModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
@@ -529,7 +529,7 @@ public class UniversalController {
                                 specification.and(modelSpecification);
                             }
                         }
-                        if (!dto.isSort_alphabet() && dto.isSort_num()) {
+                        if (!dto.isSort_alphabet() && !dto.isSort_num()) {
                             dto1.setPcModelList(pcModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {
@@ -595,7 +595,7 @@ public class UniversalController {
                                 specification.and(modelSpecification);
                             }
                         }
-                        if (!dto.isSort_alphabet() && dto.isSort_num()) {
+                        if (!dto.isSort_alphabet() && !dto.isSort_num()) {
                             dto1.setSmartPhoneModelList(smartPhoneModelRepository.findAll(specification));
                         } else {
                             if (dto.isSort_num()) {

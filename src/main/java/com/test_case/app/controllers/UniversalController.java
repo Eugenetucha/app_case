@@ -174,81 +174,101 @@ public class UniversalController {
         SearchResponseDTO dto1 = new SearchResponseDTO();
         if (dto.getName() != null) {
             String line = dto.getName().toLowerCase().trim();
-            Fridge fridge = fridgeRepository.findByName(line);
-            List<FridgeModel> fridgeModelList = new ArrayList<>();
-            if (fridge != null) {
-                String model = line.replace(fridge.getName(), "");
-                if (!model.equals("")) {
-                    for (FridgeModel fridgeModel : fridge.getFridgeModelList()) {
-                        if (fridgeModel.getModelName().equals(model)) {
-                            fridgeModelList.add(fridgeModel);
+            try {
+                Fridge fridge = fridgeRepository.findByName(line);
+                List<FridgeModel> fridgeModelList = new ArrayList<>();
+                if (fridge != null) {
+                    String model = line.replace(fridge.getName(), "");
+                    if (!model.equals("")) {
+                        for (FridgeModel fridgeModel : fridge.getFridgeModelList()) {
+                            if (fridgeModel.getModelName().equals(model)) {
+                                fridgeModelList.add(fridgeModel);
+                            }
                         }
+                    } else {
+                        fridgeModelList = fridge.getFridgeModelList();
                     }
-                } else {
-                    fridgeModelList = fridge.getFridgeModelList();
                 }
+                dto1.setFridgeModelList(fridgeModelList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            dto1.setFridgeModelList(fridgeModelList);
-            Hoover hoover = hooverRepository.findByName(line);
-            List<HooverModel> hooverModelList = new ArrayList<>();
-            if (hoover != null) {
-                String model = line.replace(hoover.getName(), "");
-                if (!model.equals("")) {
-                    for (HooverModel hooverModel : hoover.getHooverModelList()) {
-                        if (hooverModel.getModelName().equals(model)) {
-                            hooverModelList.add(hooverModel);
+            try {
+                Hoover hoover = hooverRepository.findByName(line);
+                List<HooverModel> hooverModelList = new ArrayList<>();
+                if (hoover != null) {
+                    String model = line.replace(hoover.getName(), "");
+                    if (!model.equals("")) {
+                        for (HooverModel hooverModel : hoover.getHooverModelList()) {
+                            if (hooverModel.getModelName().equals(model)) {
+                                hooverModelList.add(hooverModel);
+                            }
                         }
+                    } else {
+                        hooverModelList = hoover.getHooverModelList();
                     }
-                } else {
-                    hooverModelList = hoover.getHooverModelList();
                 }
+                dto1.setHooverModelList(hooverModelList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            dto1.setHooverModelList(hooverModelList);
-            PC PC = pcRepository.findByName(line);
-            List<PCModel> PCModelList = new ArrayList<>();
-            if (PC != null) {
-                String model = line.replace(PC.getName(), "");
-                if (!model.equals("")) {
-                    for (PCModel PCModel : PC.getPcModelList()) {
-                        if (PCModel.getModelName().equals(model)) {
-                            PCModelList.add(PCModel);
+            try {
+                PC PC = pcRepository.findByName(line);
+                List<PCModel> PCModelList = new ArrayList<>();
+                if (PC != null) {
+                    String model = line.replace(PC.getName(), "");
+                    if (!model.equals("")) {
+                        for (PCModel PCModel : PC.getPcModelList()) {
+                            if (PCModel.getModelName().equals(model)) {
+                                PCModelList.add(PCModel);
+                            }
                         }
+                    } else {
+                        PCModelList = PC.getPcModelList();
                     }
-                } else {
-                    PCModelList = PC.getPcModelList();
                 }
+                dto1.setPcModelList(PCModelList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            dto1.setPcModelList(PCModelList);
-            SmartPhone smartPhone = smartPhoneRepository.findByName(line);
-            List<SmartPhoneModel> smartPhoneModelList = new ArrayList<>();
-            if (smartPhone != null) {
-                String model = line.replace(smartPhone.getName(), "");
-                if (!model.equals("")) {
-                    for (SmartPhoneModel smartPhoneModel : smartPhone.getSmartPhoneModelList()) {
-                        if (smartPhoneModel.getModelName().equals(model)) {
-                            smartPhoneModelList.add(smartPhoneModel);
+            try {
+                SmartPhone smartPhone = smartPhoneRepository.findByName(line);
+                List<SmartPhoneModel> smartPhoneModelList = new ArrayList<>();
+                if (smartPhone != null) {
+                    String model = line.replace(smartPhone.getName(), "");
+                    if (!model.equals("")) {
+                        for (SmartPhoneModel smartPhoneModel : smartPhone.getSmartPhoneModelList()) {
+                            if (smartPhoneModel.getModelName().equals(model)) {
+                                smartPhoneModelList.add(smartPhoneModel);
+                            }
                         }
+                    } else {
+                        smartPhoneModelList = smartPhone.getSmartPhoneModelList();
                     }
-                } else {
-                    smartPhoneModelList = smartPhone.getSmartPhoneModelList();
                 }
+                dto1.setSmartPhoneModelList(smartPhoneModelList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            dto1.setSmartPhoneModelList(smartPhoneModelList);
-            TV tv = tvRepository.findByName(line);
-            List<TVModel> tvModelList = new ArrayList<>();
-            if (tv != null) {
-                String model = line.replace(tv.getName(), "");
-                if (!model.equals("")) {
-                    for (TVModel tvModel : tv.getTvModelList()) {
-                        if (tvModel.getModelName().equals(model)) {
-                            tvModelList.add(tvModel);
+            try {
+                TV tv = tvRepository.findByName(line);
+                List<TVModel> tvModelList = new ArrayList<>();
+                if (tv != null) {
+                    String model = line.replace(tv.getName(), "");
+                    if (!model.equals("")) {
+                        for (TVModel tvModel : tv.getTvModelList()) {
+                            if (tvModel.getModelName().equals(model)) {
+                                tvModelList.add(tvModel);
+                            }
                         }
+                    } else {
+                        tvModelList = tv.getTvModelList();
                     }
-                } else {
-                    tvModelList = tv.getTvModelList();
                 }
+                dto1.setTvModelList(tvModelList);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            dto1.setTvModelList(tvModelList);
         } else {
             if (dto.getType() != null) {
                 switch (dto.getType()) {
@@ -543,10 +563,8 @@ public class UniversalController {
                         }
                     }
                 }
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.OK);
             }
         }
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(dto1, HttpStatus.OK);
     }
 }

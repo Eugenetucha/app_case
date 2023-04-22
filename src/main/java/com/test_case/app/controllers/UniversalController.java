@@ -44,7 +44,7 @@ public class UniversalController {
     TVModelRepository tvModelRepository;
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody AddDTO dto) {
+    public ResponseEntity<String> add(@RequestBody AddDTO dto) {
         if (dto.getFridge() != null) {
             try {
                 fridgeRepository.save(dto.getFridge());
@@ -169,7 +169,7 @@ public class UniversalController {
     }
 
     @PostMapping("/get")
-    public ResponseEntity<?> get(@RequestBody SearchDTO dto) throws Exception {
+    public ResponseEntity<SearchResponseDTO> get(@RequestBody SearchDTO dto) throws RuntimeException {
         SearchResponseDTO dto1 = new SearchResponseDTO();
         if (dto.getName() != null) {
             String line = dto.getName().toLowerCase().trim();
@@ -220,22 +220,22 @@ public class UniversalController {
             }
             try {
                 for (PC PC : pcRepository.findByName(line)) {
-                    List<PCModel> PCModelList = new ArrayList<>();
+                    List<PCModel> pcModelList = new ArrayList<>();
                     if (PC.getPcModelList() != null) {
                         String model = line.replace(PC.getName(), "");
                         if (!model.equals("")) {
                             for (PCModel PCModel : PC.getPcModelList()) {
                                 if (PCModel.getModelName().equals(model)) {
-                                    PCModelList.add(PCModel);
+                                    pcModelList.add(PCModel);
                                 }
                             }
                         } else {
-                            PCModelList = PC.getPcModelList();
+                            pcModelList = PC.getPcModelList();
                         }
                     } else {
                         throw new RuntimeException("у линейки нет моделей");
                     }
-                    dto1.setPcModelList(PCModelList);
+                    dto1.setPcModelList(pcModelList);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -290,68 +290,64 @@ public class UniversalController {
                     case "TV": {
                         ModelSpecification<TVModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_l() != 0) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_h() != 0) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getName() != null) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getTvModel() != null) {
                             if (dto.getTvModel().getModelSerialNumber() != 0) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getTvModel().getModelSerialNumber())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getTvModel().getModelSerialNumber())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelSize() != 0) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getTvModel().getModelSize())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getTvModel().getModelSize())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().isModelAvailability()) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelCategory() != null) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT", "modelCategory", String.valueOf(dto.getTvModel().getModelCategory())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelCategory", String.valueOf(dto.getTvModel().getModelCategory())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelTechnology() != null) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<TVModel>(new ModelCriteria("INT", "modelTechnology", String.valueOf(dto.getTvModel().getModelTechnology())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelTechnology", String.valueOf(dto.getTvModel().getModelTechnology())));
                                 specification.and(modelSpecification);
                             }
                         }
                         if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                            dto1.setTvModelList(tvModelRepository.findAll(specification));
-                        } else {
-                            if (dto.isSort_num()) {
-                                if (dto.isSort_num()) {
-                                    List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice));
-                                    dto1.setTvModelList(smartPhoneModelList);
-                                } else {
-                                    List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice).reversed());
-                                    dto1.setTvModelList(smartPhoneModelList);
-                                }
-                            } else {
-                                if (dto.isSort_alphabet()) {
-                                    List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName));
-                                    dto1.setTvModelList(smartPhoneModelList);
-                                } else {
-                                    List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName).reversed());
-                                    dto1.setTvModelList(smartPhoneModelList);
-                                }
+                            List<TVModel> tvModels = new ArrayList<>();
+                            for (TVModel tvModel : tvModelRepository.findAll()) {
+                                tvModel.setC_tv(null);
+                                tvModels.add(tvModel);
                             }
+                            dto1.setTvModelList(tvModels);
+                        } else {
+                            List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
+                            if (dto.isSort_num()) {
+
+                                smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice));
+
+                            } else {
+
+                                smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName));
+
+                            }
+                            dto1.setTvModelList(smartPhoneModelList);
                         }
+                        return null;
                     }
                     case "Fridge": {
                         try {
@@ -394,40 +390,26 @@ public class UniversalController {
                                     specification.and(modelSpecification);
                                 }
                             }
+                            List<FridgeModel> smartPhoneModelList;
                             if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                                List<FridgeModel> smartPhoneModelList = new ArrayList<>();
-                                for(FridgeModel fridgeModel : fridgeModelRepository.findAll()){
-                                    //todo убрать loop
+                                smartPhoneModelList = new ArrayList<>();
+                                for (FridgeModel fridgeModel : fridgeModelRepository.findAll()) {
                                     fridgeModel.setC_fridge(null);
                                     smartPhoneModelList.add(fridgeModel);
                                 }
-                                dto1.setFridgeModelList(smartPhoneModelList);
                             } else {
+                                smartPhoneModelList = fridgeModelRepository.findAll(specification);
                                 if (dto.isSort_num()) {
-                                    if (dto.isSort_num()) {
-                                        List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
-                                        smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice));
-                                        dto1.setFridgeModelList(smartPhoneModelList);
-                                    } else {
-                                        List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
-                                        smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice).reversed());
-                                        dto1.setFridgeModelList(smartPhoneModelList);
-                                    }
+                                    smartPhoneModelList.sort(Comparator.comparingInt(FridgeModel::getModelPrice));
                                 } else {
-                                    if (dto.isSort_alphabet()) {
-                                        List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
-                                        smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName));
-                                        dto1.setFridgeModelList(smartPhoneModelList);
-                                    } else {
-                                        List<FridgeModel> smartPhoneModelList = fridgeModelRepository.findAll(specification);
-                                        smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName).reversed());
-                                        dto1.setFridgeModelList(smartPhoneModelList);
-                                    }
+                                    smartPhoneModelList.sort(Comparator.comparing(FridgeModel::getModelName));
                                 }
                             }
+                            dto1.setFridgeModelList(smartPhoneModelList);
                         } catch (Exception e) {
-                            throw new Exception(e);
+                            throw new RuntimeException(e);
                         }
+                        return null;
                     }
                     case "Hoover": {
                         ModelSpecification<HooverModel> specification = new ModelSpecification<>(null);
@@ -470,30 +452,23 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                            dto1.setHooverModelList(hooverModelRepository.findAll(specification));
-                        } else {
-                            if (dto.isSort_num()) {
-                                if (dto.isSort_num()) {
-                                    List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice));
-                                    dto1.setHooverModelList(smartPhoneModelList);
-                                } else {
-                                    List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice).reversed());
-                                    dto1.setHooverModelList(smartPhoneModelList);
-                                }
-                            } else {
-                                if (dto.isSort_alphabet()) {
-                                    List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName));
-                                    dto1.setHooverModelList(smartPhoneModelList);
-                                } else {
-                                    List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName).reversed());
-                                    dto1.setHooverModelList(smartPhoneModelList);
-                                }
+                            List<HooverModel> hooverModelList = new ArrayList<>();
+                            for (HooverModel hooverModel : hooverModelRepository.findAll()) {
+                                hooverModel.setC_hoover(null);
+                                hooverModelList.add(hooverModel);
                             }
+                            dto1.setHooverModelList(hooverModelList);
+                        } else {
+                            List<HooverModel> smartPhoneModelList = hooverModelRepository.findAll(specification);
+                            if (dto.isSort_num()) {
+                                smartPhoneModelList.sort(Comparator.comparingInt(HooverModel::getModelPrice));
+                            } else {
+
+                                smartPhoneModelList.sort(Comparator.comparing(HooverModel::getModelName));
+                            }
+                            dto1.setHooverModelList(smartPhoneModelList);
                         }
+                         return null;
                     }
                     case "PC": {
                         ModelSpecification<PCModel> specification = new ModelSpecification<>(null);
@@ -536,32 +511,22 @@ public class UniversalController {
                             }
                         }
                         if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                            List<PCModel> smartPhoneModelList = new ArrayList<>();
-                            pcModelRepository.findAll().forEach(smartPhoneModelList::add);
-                            dto1.setPcModelList(smartPhoneModelList);
-                        } else {
-                            if (dto.isSort_num()) {
-                                if (dto.isSort_num()) {
-                                    List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice));
-                                    dto1.setPcModelList(smartPhoneModelList);
-                                } else {
-                                    List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice).reversed());
-                                    dto1.setPcModelList(smartPhoneModelList);
-                                }
-                            } else {
-                                if (dto.isSort_alphabet()) {
-                                    List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName));
-                                    dto1.setPcModelList(smartPhoneModelList);
-                                } else {
-                                    List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName).reversed());
-                                    dto1.setPcModelList(smartPhoneModelList);
-                                }
+                            List<PCModel> pcModels = new ArrayList<>();
+                            for (PCModel pcModel : pcModelRepository.findAll()) {
+                                pcModel.setC_pc(null);
+                                pcModels.add(pcModel);
                             }
+                            dto1.setPcModelList(pcModels);
+                        } else {
+                            List<PCModel> smartPhoneModelList = pcModelRepository.findAll(specification);
+                            if (dto.isSort_num()) {
+                                smartPhoneModelList.sort(Comparator.comparingInt(PCModel::getModelPrice));
+                            } else {
+                                smartPhoneModelList.sort(Comparator.comparing(PCModel::getModelName));
+                            }
+                            dto1.setPcModelList(smartPhoneModelList);
                         }
+                        return null;
                     }
                     case "SmartPhone": {
                         ModelSpecification<SmartPhoneModel> specification = new ModelSpecification<>(null);
@@ -603,33 +568,25 @@ public class UniversalController {
                                 specification.and(modelSpecification);
                             }
                         }
+                        List<SmartPhoneModel> smartPhoneModelList;
                         if (!dto.isSort_alphabet() && !dto.isSort_num()) {
-                            dto1.setSmartPhoneModelList(smartPhoneModelRepository.findAll(specification));
+                            smartPhoneModelList = new ArrayList<>();
+                            for (SmartPhoneModel smartPhoneModel : smartPhoneModelRepository.findAll()) {
+                                smartPhoneModel.setC_smartPhone(null);
+                                smartPhoneModelList.add(smartPhoneModel);
+                            }
                         } else {
+                            smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
                             if (dto.isSort_num()) {
-                                if (dto.isSort_num()) {
-                                    List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice));
-                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
-                                } else {
-                                    List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice).reversed());
-                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
-                                }
+                                smartPhoneModelList.sort(Comparator.comparingInt(SmartPhoneModel::getModelPrice));
                             } else {
-                                if (dto.isSort_alphabet()) {
-                                    List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName));
-                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
-                                } else {
-                                    List<SmartPhoneModel> smartPhoneModelList = smartPhoneModelRepository.findAll(specification);
-                                    smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName).reversed());
-                                    dto1.setSmartPhoneModelList(smartPhoneModelList);
-                                }
+                                smartPhoneModelList.sort(Comparator.comparing(SmartPhoneModel::getModelName));
                             }
                         }
+                        dto1.setSmartPhoneModelList(smartPhoneModelList);
                     }
                 }
+                return null;
             }
         }
         return new ResponseEntity<>(dto1, HttpStatus.OK);

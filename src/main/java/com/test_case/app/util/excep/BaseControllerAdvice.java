@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class BaseControllerAdvice {
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleException(RuntimeException e) {
-        return new ResponseEntity<>(e,HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleException(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
     }
 }

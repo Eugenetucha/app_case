@@ -1,68 +1,38 @@
 package com.test_case.app.model.entity;
 
-import lombok.AllArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.Set;
+import javax.validation.constraints.NotEmpty;
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "user")
-public class User implements UserDetails {
+@Entity
+@Table(name="users")
+public class User implements GrantedAuthority  {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
-    @Size(min=2, message = "Не меньше 5 знаков")
+    @Column
+    @NotEmpty(message = "Username must not be empty")
     private String username;
-    @Size(min=2, message = "Не меньше 5 знаков")
+    @NotEmpty(message = "Password must not be empty")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column
     private String password;
-    @Transient
-    private String passwordConfirm;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
-
+    @Column
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String role;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "isNonLocket")
+    private boolean isAccountNonLocked;
     @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+    public String getAuthority() {
+        return role;
     }
 }

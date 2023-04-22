@@ -71,7 +71,7 @@ public class UniversalController {
             try {
                 fridgeRepository.save(dto.getFridge());
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getFridgeModel() != null) {
@@ -93,7 +93,7 @@ public class UniversalController {
             try {
                 hooverRepository.save(dto.getHoover());
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getHooverModel() != null) {
@@ -112,14 +112,14 @@ public class UniversalController {
                 model.setModelAvailability(dto.getFridgeModel().isModelAvailability());
                 hooverModelRepository.save(model);
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getTv() != null) {
             try {
                 tvRepository.save(dto.getTv());
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getTvModel() != null) {
@@ -138,14 +138,14 @@ public class UniversalController {
                 model.setModelAvailability(dto.getTvModel().isModelAvailability());
                 tvModelRepository.save(model);
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getPc() != null) {
             try {
                 pcRepository.save(dto.getPc());
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getPcModel() != null) {
@@ -164,14 +164,14 @@ public class UniversalController {
                 model.setModelAvailability(dto.getPcModel().isModelAvailability());
                 pcModelRepository.save(model);
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getSmartPhone() != null) {
             try {
                 smartPhoneRepository.save(dto.getSmartPhone());
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         if (dto.getSmartPhoneModel() != null) {
@@ -190,7 +190,7 @@ public class UniversalController {
                 model.setModelAvailability(dto.getSmartPhoneModel().isModelAvailability());
                 smartPhoneModelRepository.save(model);
             } catch (RuntimeException e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -219,7 +219,7 @@ public class UniversalController {
                     }
                 }
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
             try {
                 for (Hoover hoover : hooverRepository.findByName(line)) {
@@ -239,7 +239,7 @@ public class UniversalController {
                     }
                 }
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
             try {
                 for (PC PC : pcRepository.findByName(line)) {
@@ -259,7 +259,7 @@ public class UniversalController {
                     dto1.setPcModelList(pcModelList);
                 }
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
             try {
                 for (SmartPhone smartPhone : smartPhoneRepository.findByName(line)) {
@@ -279,7 +279,7 @@ public class UniversalController {
                     }
                 }
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
             try {
                 for (TV tv : tvRepository.findByName(line)) {
@@ -299,7 +299,7 @@ public class UniversalController {
                     dto1.setTvModelList(tvModelList);
                 }
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                log.error(e.getMessage());
             }
         } else {
             if (dto.getType() != null) {
@@ -424,7 +424,7 @@ public class UniversalController {
                             }
                             dto1.setFridgeModelList(smartPhoneModelList);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage());
                         }
                         return null;
                     }

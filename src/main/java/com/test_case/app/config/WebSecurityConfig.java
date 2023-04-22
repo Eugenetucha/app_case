@@ -1,6 +1,6 @@
 package com.test_case.app.config;
 
-import com.test_case.app.service.UserService;
+import com.test_case.app.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    UserService userService;
+    UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -51,6 +51,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 }

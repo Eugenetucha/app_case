@@ -1,6 +1,5 @@
 package com.test_case.app.model.dto;
 
-import com.test_case.app.model.entity.*;
 import com.test_case.app.model.entity.entity_model.*;
 import lombok.Getter;
 import lombok.Setter;

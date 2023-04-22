@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SmartPhoneRepository extends JpaRepository<SmartPhone, Long> {
-    public List<SmartPhone> findByName(String name);
+    List<SmartPhone> findByName(String name);
 }

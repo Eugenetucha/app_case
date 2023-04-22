@@ -1,13 +1,11 @@
 package com.test_case.app.model.entity.entity_model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.test_case.app.model.entity.Fridge;
-
-import javax.persistence.*;
-
 import com.test_case.app.model.entity.Hoover;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
 
 @Getter
 @Setter

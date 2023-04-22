@@ -1,4 +1,4 @@
-package com.test_case.app.util.spec;
+package com.test_case.app.util.specification;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

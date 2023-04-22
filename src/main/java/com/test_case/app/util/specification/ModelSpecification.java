@@ -1,4 +1,4 @@
-package com.test_case.app.util.spec;
+package com.test_case.app.util.specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

@@ -1,5 +1,7 @@
 package com.test_case.app.controllers;
 
+import com.test_case.app.model.KeyOfOperations;
+import com.test_case.app.model.TypeOfOperations;
 import com.test_case.app.model.dto.AddDTO;
 import com.test_case.app.model.dto.SearchDTO;
 import com.test_case.app.model.dto.SearchResponseDTO;
@@ -7,19 +9,26 @@ import com.test_case.app.model.entity.*;
 import com.test_case.app.model.entity.entity_model.*;
 import com.test_case.app.repository.*;
 import com.test_case.app.repository.model_repository.*;
-import com.test_case.app.util.spec.ModelCriteria;
-import com.test_case.app.util.spec.ModelSpecification;
+import com.test_case.app.service.UserService;
+import com.test_case.app.util.specification.ModelCriteria;
+import com.test_case.app.util.specification.ModelSpecification;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class UniversalController {
     @Autowired
@@ -42,44 +51,57 @@ public class UniversalController {
     SmartPhoneModelRepository smartPhoneModelRepository;
     @Autowired
     TVModelRepository tvModelRepository;
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/registration")
+    public ResponseEntity<String> addUser(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
+
+        try {
+            userService.saveUser(userForm);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody AddDTO dto) {
+    public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {
         if (dto.getFridge() != null) {
             try {
                 fridgeRepository.save(dto.getFridge());
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getFridgeModel() != null) {
-            try {
-                FridgeModel fridgeModel = new FridgeModel();
+            FridgeModel fridgeModel = new FridgeModel();
+            if (fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).isPresent()) {
                 fridgeModel.setC_fridge(fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get());
-                fridgeModel.setModelName(dto.getFridgeModel().getModelName());
-                fridgeModel.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
-                fridgeModel.setModelColor(dto.getFridgeModel().getModelColor());
-                fridgeModel.setModelSize(dto.getFridgeModel().getModelSize());
-                fridgeModel.setModelPrice(dto.getFridgeModel().getModelPrice());
-                fridgeModel.setModelNumberOfDoors(dto.getFridgeModel().getModelNumberOfDoors());
-                fridgeModel.setModelCompressorType(dto.getFridgeModel().getModelCompressorType());
-                fridgeModel.setModelAvailability(dto.getFridgeModel().isModelAvailability());
-                fridgeModelRepository.save(fridgeModel);
-            } catch (RuntimeException e) {
-                throw new RuntimeException(e);
             }
+            fridgeModel.setModelName(dto.getFridgeModel().getModelName());
+            fridgeModel.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
+            fridgeModel.setModelColor(dto.getFridgeModel().getModelColor());
+            fridgeModel.setModelSize(dto.getFridgeModel().getModelSize());
+            fridgeModel.setModelPrice(dto.getFridgeModel().getModelPrice());
+            fridgeModel.setModelNumberOfDoors(dto.getFridgeModel().getModelNumberOfDoors());
+            fridgeModel.setModelCompressorType(dto.getFridgeModel().getModelCompressorType());
+            fridgeModel.setModelAvailability(dto.getFridgeModel().isModelAvailability());
+            fridgeModelRepository.save(fridgeModel);
         }
         if (dto.getHoover() != null) {
             try {
                 hooverRepository.save(dto.getHoover());
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getHooverModel() != null) {
             try {
                 HooverModel model = new HooverModel();
-                model.setC_hoover(hooverRepository.findById(dto.getHooverModel().getHoover_id()).get());
+                if (hooverRepository.findById(dto.getHooverModel().getHoover_id()).isPresent()) {
+                    model.setC_hoover(hooverRepository.findById(dto.getHooverModel().getHoover_id()).get());
+                }
                 model.setModelName(dto.getFridgeModel().getModelName());
                 model.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
                 model.setModelColor(dto.getFridgeModel().getModelColor());
@@ -90,20 +112,22 @@ public class UniversalController {
                 model.setModelAvailability(dto.getFridgeModel().isModelAvailability());
                 hooverModelRepository.save(model);
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getTv() != null) {
             try {
                 tvRepository.save(dto.getTv());
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getTvModel() != null) {
             try {
                 TVModel model = new TVModel();
-                model.setC_tv(tvRepository.findById(dto.getTvModel().getTv_id()).get());
+                if (tvRepository.findById(dto.getTvModel().getTv_id()).isPresent()) {
+                    model.setC_tv(tvRepository.findById(dto.getTvModel().getTv_id()).get());
+                }
                 model.setModelName(dto.getTvModel().getModelName());
                 model.setModelSerialNumber(dto.getTvModel().getModelSerialNumber());
                 model.setModelColor(dto.getTvModel().getModelColor());
@@ -114,20 +138,22 @@ public class UniversalController {
                 model.setModelAvailability(dto.getTvModel().isModelAvailability());
                 tvModelRepository.save(model);
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getPc() != null) {
             try {
                 pcRepository.save(dto.getPc());
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getPcModel() != null) {
             try {
                 PCModel model = new PCModel();
-                model.setC_pc(pcRepository.findById(dto.getPcModel().getPc_id()).get());
+                if (pcRepository.findById(dto.getPcModel().getPc_id()).isPresent()) {
+                    model.setC_pc(pcRepository.findById(dto.getPcModel().getPc_id()).get());
+                }
                 model.setModelName(dto.getPcModel().getModelName());
                 model.setModelSerialNumber(dto.getPcModel().getModelSerialNumber());
                 model.setModelColor(dto.getPcModel().getModelColor());
@@ -138,20 +164,22 @@ public class UniversalController {
                 model.setModelAvailability(dto.getPcModel().isModelAvailability());
                 pcModelRepository.save(model);
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getSmartPhone() != null) {
             try {
                 smartPhoneRepository.save(dto.getSmartPhone());
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         if (dto.getSmartPhoneModel() != null) {
             try {
                 SmartPhoneModel model = new SmartPhoneModel();
-                model.setC_smartPhone(smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get());
+                if (smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).isPresent()) {
+                    model.setC_smartPhone(smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get());
+                }
                 model.setModelName(dto.getSmartPhoneModel().getModelName());
                 model.setModelSerialNumber(dto.getSmartPhoneModel().getModelSerialNumber());
                 model.setModelColor(dto.getSmartPhoneModel().getModelColor());
@@ -162,7 +190,7 @@ public class UniversalController {
                 model.setModelAvailability(dto.getSmartPhoneModel().isModelAvailability());
                 smartPhoneModelRepository.save(model);
             } catch (RuntimeException e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -188,12 +216,10 @@ public class UniversalController {
                             fridgeModelList = fridge.getFridgeModelList();
                         }
                         dto1.setFridgeModelList(fridgeModelList);
-                    } else {
-                        throw new RuntimeException("у линейки нет моделей");
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
             try {
                 for (Hoover hoover : hooverRepository.findByName(line)) {
@@ -210,13 +236,10 @@ public class UniversalController {
                             hooverModelList = hoover.getHooverModelList();
                         }
                         dto1.setHooverModelList(hooverModelList);
-                    } else {
-                        throw new RuntimeException("у линейки нет моделей");
-
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
             try {
                 for (PC PC : pcRepository.findByName(line)) {
@@ -232,13 +255,11 @@ public class UniversalController {
                         } else {
                             pcModelList = PC.getPcModelList();
                         }
-                    } else {
-                        throw new RuntimeException("у линейки нет моделей");
                     }
                     dto1.setPcModelList(pcModelList);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
             try {
                 for (SmartPhone smartPhone : smartPhoneRepository.findByName(line)) {
@@ -255,12 +276,10 @@ public class UniversalController {
                             smartPhoneModelList = smartPhone.getSmartPhoneModelList();
                         }
                         dto1.setSmartPhoneModelList(smartPhoneModelList);
-                    } else {
-                        throw new RuntimeException("у линейки нет моделей");
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
             try {
                 for (TV tv : tvRepository.findByName(line)) {
@@ -276,13 +295,11 @@ public class UniversalController {
                         } else {
                             tvModelList = tv.getTvModelList();
                         }
-                    } else {
-                        throw new RuntimeException("у линейки нет моделей");
                     }
                     dto1.setTvModelList(tvModelList);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                log.debug(e.getMessage());
             }
         } else {
             if (dto.getType() != null) {
@@ -290,40 +307,40 @@ public class UniversalController {
                     case "TV": {
                         ModelSpecification<TVModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_COLOR.getValue(), dto.getColor()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_l() != 0) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_1.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_l())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_h() != 0) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getName() != null) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getTvModel() != null) {
                             if (dto.getTvModel().getModelSerialNumber() != 0) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getTvModel().getModelSerialNumber())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getTvModel().getModelSerialNumber())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelSize() != 0) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getTvModel().getModelSize())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getTvModel().getModelSize())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().isModelAvailability()) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.BOOLEAN.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(true)));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelCategory() != null) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelCategory", String.valueOf(dto.getTvModel().getModelCategory())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelCategory", String.valueOf(dto.getTvModel().getModelCategory())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getTvModel().getModelTechnology() != null) {
-                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelTechnology", String.valueOf(dto.getTvModel().getModelTechnology())));
+                                ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelTechnology", String.valueOf(dto.getTvModel().getModelTechnology())));
                                 specification.and(modelSpecification);
                             }
                         }
@@ -353,40 +370,40 @@ public class UniversalController {
                         try {
                             ModelSpecification<FridgeModel> specification = new ModelSpecification<>(null);
                             if (dto.getColor() != null) {
-                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_COLOR.getValue(), dto.getColor()));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getPrice_l() != 0) {
-                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_1.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_l())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getPrice_h() != 0) {
-                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getName() != null) {
-                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getFridgeModel() != null) {
                                 if (dto.getFridgeModel().getModelSerialNumber() != 0) {
-                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getFridgeModel().getModelSerialNumber())));
+                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getFridgeModel().getModelSerialNumber())));
                                     specification.and(modelSpecification);
                                 }
                                 if (dto.getFridgeModel().getModelSize() != 0) {
-                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getFridgeModel().getModelSize())));
+                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getFridgeModel().getModelSize())));
                                     specification.and(modelSpecification);
                                 }
                                 if (dto.getFridgeModel().isModelAvailability()) {
-                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.BOOLEAN.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(true)));
                                     specification.and(modelSpecification);
                                 }
                                 if (dto.getFridgeModel().getModelNumberOfDoors() != null) {
-                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelNumberOfDoors", dto.getFridgeModel().getModelNumberOfDoors()));
+                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelNumberOfDoors", dto.getFridgeModel().getModelNumberOfDoors()));
                                     specification.and(modelSpecification);
                                 }
                                 if (dto.getFridgeModel().getModelCompressorType() != null) {
-                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelCompressorType", dto.getFridgeModel().getModelCompressorType()));
+                                    ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelCompressorType", dto.getFridgeModel().getModelCompressorType()));
                                     specification.and(modelSpecification);
                                 }
                             }
@@ -407,47 +424,47 @@ public class UniversalController {
                             }
                             dto1.setFridgeModelList(smartPhoneModelList);
                         } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            log.debug(e.getMessage());
                         }
                         return null;
                     }
                     case "Hoover": {
                         ModelSpecification<HooverModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
-                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_COLOR.getValue(), dto.getColor()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_l() != 0) {
-                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_1.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_l())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_h() != 0) {
-                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getName() != null) {
-                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getHooverModel() != null) {
                             if (dto.getHooverModel().getModelSerialNumber() != 0) {
-                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getHooverModel().getModelSerialNumber())));
+                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getHooverModel().getModelSerialNumber())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getHooverModel().getModelSize() != 0) {
-                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getHooverModel().getModelSize())));
+                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getHooverModel().getModelSize())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getHooverModel().isModelAvailability()) {
-                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.BOOLEAN.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(true)));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getHooverModel().getModelNumberOfModes() != 0) {
-                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelNumberOfModes", String.valueOf(dto.getHooverModel().getModelNumberOfModes())));
+                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelNumberOfModes", String.valueOf(dto.getHooverModel().getModelNumberOfModes())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getHooverModel().getModelVolume() != 0) {
-                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelVolume", String.valueOf(dto.getHooverModel().getModelVolume())));
+                                ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), "modelVolume", String.valueOf(dto.getHooverModel().getModelVolume())));
                                 specification.and(modelSpecification);
                             }
                         }
@@ -468,37 +485,37 @@ public class UniversalController {
                             }
                             dto1.setHooverModelList(smartPhoneModelList);
                         }
-                         return null;
+                        return null;
                     }
                     case "PC": {
                         ModelSpecification<PCModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
-                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_COLOR.getValue(), dto.getColor()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_l() != 0) {
-                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_1.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_l())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_h() != 0) {
-                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getName() != null) {
-                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPcModel() != null) {
                             if (dto.getPcModel().getModelSerialNumber() != 0) {
-                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getPcModel().getModelSerialNumber())));
+                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getPcModel().getModelSerialNumber())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getPcModel().getModelSize() != 0) {
-                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getPcModel().getModelSize())));
+                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getPcModel().getModelSize())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getPcModel().isModelAvailability()) {
-                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.BOOLEAN.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(true)));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getPcModel().getModelCategory() != null) {
@@ -531,40 +548,40 @@ public class UniversalController {
                     case "SmartPhone": {
                         ModelSpecification<SmartPhoneModel> specification = new ModelSpecification<>(null);
                         if (dto.getColor() != null) {
-                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelColor", dto.getColor()));
+                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_COLOR.getValue(), dto.getColor()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_l() != 0) {
-                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_1", "modelPrice", String.valueOf(dto.getPrice_l())));
+                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_1.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_l())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getPrice_h() != 0) {
-                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT_CHECK_2", "modelPrice", String.valueOf(dto.getPrice_h())));
+                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
                         if (dto.getName() != null) {
-                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("VARCHAR", "modelName", dto.getName().toLowerCase()));
+                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getSmartPhoneModel() != null) {
                             if (dto.getSmartPhoneModel().getModelSerialNumber() != 0) {
-                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSerialNumber", String.valueOf(dto.getSmartPhoneModel().getModelSerialNumber())));
+                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getSmartPhoneModel().getModelSerialNumber())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getSmartPhoneModel().getModelSize() != 0) {
-                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getSmartPhoneModel().getModelSize())));
+                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getSmartPhoneModel().getModelSize())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getSmartPhoneModel().isModelAvailability()) {
-                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("BOOLEAN", "modelAvailability", String.valueOf(true)));
+                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.BOOLEAN.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(true)));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getSmartPhoneModel().getModelMemory() != 0) {
-                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelSize", String.valueOf(dto.getSmartPhoneModel().getModelMemory())));
+                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SIZE.getValue(), String.valueOf(dto.getSmartPhoneModel().getModelMemory())));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getSmartPhoneModel().getModelNumberOfCameras() != 0) {
-                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria("INT", "modelAvailability", String.valueOf(dto.getSmartPhoneModel().isModelAvailability())));
+                                ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_AVAILABILITY.getValue(), String.valueOf(dto.getSmartPhoneModel().isModelAvailability())));
                                 specification.and(modelSpecification);
                             }
                         }

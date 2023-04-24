@@ -12,16 +12,16 @@ import com.test_case.app.repository.model_repository.*;
 import com.test_case.app.service.UserService;
 import com.test_case.app.util.specification.ModelCriteria;
 import com.test_case.app.util.specification.ModelSpecification;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -53,18 +53,27 @@ public class UniversalController {
     TVModelRepository tvModelRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    @Operation(summary = "Регистрация")
     @PostMapping("/registration")
-    public ResponseEntity<String> addUser(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
+    public ResponseEntity<String> addUser(@RequestBody User userForm, BindingResult bindingResult, Model model) {
 
         try {
-            userService.saveUser(userForm);
+            userForm.setRole("user");
+            userForm.setPassword(passwordEncoder.encode(userForm.getPassword()));
+            if(userService.loadUserByUsername(userForm.getUsername()) == null){
+                userService.saveUser(userForm);
+            }else{
+                throw new RuntimeException("user exists already");
+            }
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            log.error(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @Operation(summary = "Добавить модель или линейку")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {
         if (dto.getFridge() != null) {
@@ -230,10 +239,9 @@ public class UniversalController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @Operation(summary = "Получить список моделей")
     @PostMapping("/get")
     public ResponseEntity<SearchResponseDTO> get(@RequestBody SearchDTO dto) throws RuntimeException {
-        //todo работает все кроме поиска по имени и сделать тестовые данные для дампа и написать ридми
         SearchResponseDTO dto1 = new SearchResponseDTO();
         if (dto.getName() != null) {
             String line = dto.getName().toLowerCase().trim();
@@ -354,10 +362,6 @@ public class UniversalController {
                             ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
-                        if (dto.getName() != null) {
-                            ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
-                            specification.and(modelSpecification);
-                        }
                         if (dto.getTvModel() != null) {
                             if (dto.getTvModel().getModelSerialNumber() != 0) {
                                 ModelSpecification<TVModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getTvModel().getModelSerialNumber())));
@@ -411,10 +415,6 @@ public class UniversalController {
                             }
                             if (dto.getPrice_h() != 0) {
                                 ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
-                                specification.and(modelSpecification);
-                            }
-                            if (dto.getName() != null) {
-                                ModelSpecification<FridgeModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                                 specification.and(modelSpecification);
                             }
                             if (dto.getFridgeModel() != null) {
@@ -474,10 +474,6 @@ public class UniversalController {
                             ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
-                        if (dto.getName() != null) {
-                            ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
-                            specification.and(modelSpecification);
-                        }
                         if (dto.getHooverModel() != null) {
                             if (dto.getHooverModel().getModelSerialNumber() != 0) {
                                 ModelSpecification<HooverModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getHooverModel().getModelSerialNumber())));
@@ -533,10 +529,6 @@ public class UniversalController {
                             ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
                             specification.and(modelSpecification);
                         }
-                        if (dto.getName() != null) {
-                            ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
-                            specification.and(modelSpecification);
-                        }
                         if (dto.getPcModel() != null) {
                             if (dto.getPcModel().getModelSerialNumber() != 0) {
                                 ModelSpecification<PCModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT.toString(), KeyOfOperations.MODEL_SERIAL_NUMBER.getValue(), String.valueOf(dto.getPcModel().getModelSerialNumber())));
@@ -589,10 +581,6 @@ public class UniversalController {
                         }
                         if (dto.getPrice_h() != 0) {
                             ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.INT_CHECK_2.toString(), KeyOfOperations.MODEL_PRICE.getValue(), String.valueOf(dto.getPrice_h())));
-                            specification.and(modelSpecification);
-                        }
-                        if (dto.getName() != null) {
-                            ModelSpecification<SmartPhoneModel> modelSpecification = new ModelSpecification<>(new ModelCriteria(TypeOfOperations.VARCHAR.toString(), KeyOfOperations.MODEL_NAME.getValue(), dto.getName().toLowerCase()));
                             specification.and(modelSpecification);
                         }
                         if (dto.getSmartPhoneModel() != null) {

@@ -1,0 +1,97 @@
+{
+  "tv": {
+    "name": "string",
+    "country": "string",
+    "company": "string",
+    "onlineTrade": true,
+    "credit": true,
+    "tvModelList" : null
+  },
+  "smartPhone": {
+    "name": "string",
+    "country": "string",
+    "company": "string",
+    "onlineTrade": true,
+    "credit": true,
+    "smartPhoneModelList": null
+  },
+  "pc": {
+    "name": "string",
+    "country": "string",
+    "company": "string",
+    "onlineTrade": true,
+    "credit": true,
+    "pcModelList": null
+  },
+  "hoover": {
+    "name": "string",
+    "country": "string",
+    "company": "string",
+    "onlineTrade": true,
+    "credit": true,
+    "hooverModelList": null
+  },
+  "fridge": {
+    "name": "string",
+    "country": "string",
+    "company": "string",
+    "onlineTrade": true,
+    "credit": true,
+    "fridgeModelList": null
+  },
+  "tvModel": {
+    "modelName": "string",
+    "modelSerialNumber": 0,
+    "modelColor": "string",
+    "modelSize": 0,
+    "modelPrice": 0,
+    "modelCategory": "string",
+    "modelTechnology": "string",
+    "modelAvailability": true,
+    "tv_id": 0
+  },
+  "smartPhoneModel": {
+    "modelName": "string",
+    "modelSerialNumber": 0,
+    "modelColor": "string",
+    "modelSize": 0,
+    "modelPrice": 0,
+    "modelMemory": 0,
+    "modelNumberOfCameras": 0,
+    "modelAvailability": true,
+    "smartphone_id": 0
+  },
+  "pcModel": {
+    "modelName": "string",
+    "modelSerialNumber": 0,
+    "modelColor": "string",
+    "modelSize": 0,
+    "modelPrice": 0,
+    "modelCategory": "string",
+    "modelTypeOfProcessor": "string",
+    "modelAvailability": true,
+    "pc_id": 0
+  },
+  "hooverModel": {
+    "modelName": "string",
+    "modelSerialNumber": 0,
+    "modelColor": "string",
+    "modelSize": 0,
+    "modelPrice": 0,
+    "modelVolume": 0,
+    "modelNumberOfModes": 0,
+    "modelAvailability": true,
+    "hoover_id": 0
+  },
+  "fridgeModel": {
+    "modelName": "string",
+    "modelSerialNumber": 0,
+    "modelColor": "string",
+    "modelSize": 0,
+    "modelPrice": 0,
+    "modelNumberOfDoors": "string",
+    "modelCompressorType": "string",
+    "modelAvailability": true,
+    "fridge_id": 0
+  }
+}

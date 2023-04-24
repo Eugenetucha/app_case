@@ -18,7 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -75,6 +78,13 @@ public class UniversalController {
             FridgeModel fridgeModel = new FridgeModel();
             if (fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).isPresent()) {
                 fridgeModel.setC_fridge(fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get());
+                
+                if (fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList() != null) {
+                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
+                } else {
+                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().setFridgeModelList(new ArrayList<>());
+                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
+                }
             }
             fridgeModel.setModelName(dto.getFridgeModel().getModelName());
             fridgeModel.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
@@ -98,6 +108,13 @@ public class UniversalController {
                 HooverModel model = new HooverModel();
                 if (hooverRepository.findById(dto.getHooverModel().getHoover_id()).isPresent()) {
                     model.setC_hoover(hooverRepository.findById(dto.getHooverModel().getHoover_id()).get());
+                    
+                    if (hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList() != null) {
+                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList().add(model);
+                    } else {
+                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().setHooverModelList(new ArrayList<>());
+                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList().add(model);
+                    }
                 }
                 model.setModelName(dto.getFridgeModel().getModelName());
                 model.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
@@ -124,6 +141,13 @@ public class UniversalController {
                 TVModel model = new TVModel();
                 if (tvRepository.findById(dto.getTvModel().getTv_id()).isPresent()) {
                     model.setC_tv(tvRepository.findById(dto.getTvModel().getTv_id()).get());
+                    
+                    if (tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList() != null) {
+                        tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList().add(model);
+                    } else {
+                        tvRepository.findById(dto.getTvModel().getTv_id()).get().setTvModelList(new ArrayList<>());
+                        tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList().add(model);
+                    }
                 }
                 model.setModelName(dto.getTvModel().getModelName());
                 model.setModelSerialNumber(dto.getTvModel().getModelSerialNumber());
@@ -150,6 +174,13 @@ public class UniversalController {
                 PCModel model = new PCModel();
                 if (pcRepository.findById(dto.getPcModel().getPc_id()).isPresent()) {
                     model.setC_pc(pcRepository.findById(dto.getPcModel().getPc_id()).get());
+                    
+                    if (pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList() != null) {
+                        pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList().add(model);
+                    } else {
+                        pcRepository.findById(dto.getPcModel().getPc_id()).get().setPcModelList(new ArrayList<>());
+                        pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList().add(model);
+                    }
                 }
                 model.setModelName(dto.getPcModel().getModelName());
                 model.setModelSerialNumber(dto.getPcModel().getModelSerialNumber());
@@ -176,6 +207,13 @@ public class UniversalController {
                 SmartPhoneModel model = new SmartPhoneModel();
                 if (smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).isPresent()) {
                     model.setC_smartPhone(smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get());
+                    
+                    if (smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList() != null) {
+                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList().add(model);
+                    } else {
+                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().setSmartPhoneModelList(new ArrayList<>());
+                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList().add(model);
+                    }
                 }
                 model.setModelName(dto.getSmartPhoneModel().getModelName());
                 model.setModelSerialNumber(dto.getSmartPhoneModel().getModelSerialNumber());
@@ -195,6 +233,7 @@ public class UniversalController {
 
     @PostMapping("/get")
     public ResponseEntity<SearchResponseDTO> get(@RequestBody SearchDTO dto) throws RuntimeException {
+        //todo работает все кроме поиска по имени и сделать тестовые данные для дампа и написать ридми
         SearchResponseDTO dto1 = new SearchResponseDTO();
         if (dto.getName() != null) {
             String line = dto.getName().toLowerCase().trim();
@@ -351,17 +390,13 @@ public class UniversalController {
                         } else {
                             List<TVModel> smartPhoneModelList = tvModelRepository.findAll(specification);
                             if (dto.isSort_num()) {
-
                                 smartPhoneModelList.sort(Comparator.comparingInt(TVModel::getModelPrice));
-
                             } else {
-
                                 smartPhoneModelList.sort(Comparator.comparing(TVModel::getModelName));
-
                             }
                             dto1.setTvModelList(smartPhoneModelList);
                         }
-                        return null;
+                        new ResponseEntity<>(dto1, HttpStatus.OK);
                     }
                     case "Fridge": {
                         try {
@@ -423,7 +458,7 @@ public class UniversalController {
                         } catch (Exception e) {
                             log.error(e.getMessage());
                         }
-                        return null;
+                        new ResponseEntity<>(dto1, HttpStatus.OK);
                     }
                     case "Hoover": {
                         ModelSpecification<HooverModel> specification = new ModelSpecification<>(null);
@@ -482,7 +517,7 @@ public class UniversalController {
                             }
                             dto1.setHooverModelList(smartPhoneModelList);
                         }
-                        return null;
+                        new ResponseEntity<>(dto1, HttpStatus.OK);
                     }
                     case "PC": {
                         ModelSpecification<PCModel> specification = new ModelSpecification<>(null);
@@ -540,7 +575,7 @@ public class UniversalController {
                             }
                             dto1.setPcModelList(smartPhoneModelList);
                         }
-                        return null;
+                        new ResponseEntity<>(dto1, HttpStatus.OK);
                     }
                     case "SmartPhone": {
                         ModelSpecification<SmartPhoneModel> specification = new ModelSpecification<>(null);
@@ -600,7 +635,7 @@ public class UniversalController {
                         dto1.setSmartPhoneModelList(smartPhoneModelList);
                     }
                 }
-                return null;
+                return new ResponseEntity<>(dto1, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(dto1, HttpStatus.OK);

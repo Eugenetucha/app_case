@@ -1,7 +1,6 @@
 package com.test_case.app.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.test_case.app.model.entity.entity_model.PCModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,22 +10,26 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "pc")
-public class PC {
+@Table(name = "model")
+public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long pc_id;
+    Long id;
     @Column
-    String name;
+    String modelName;
     @Column
-    String country;
+    int modelSerialNumber;
     @Column
-    String company;
+    String modelColor;
     @Column
-    Boolean onlineTrade;
+    int modelSize;
     @Column
-    Boolean credit;
-    @OneToMany(mappedBy = "c_pc")
-    List<PCModel> pcModelList;
+    int modelPrice;
+    @Column
+    boolean modelAvailability;
+    @OneToMany
+    @JoinColumn(name = "model_id")
+    List<Parameters> parametersList;
+
 }

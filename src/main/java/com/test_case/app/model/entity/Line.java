@@ -1,24 +1,25 @@
 package com.test_case.app.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.test_case.app.model.entity.entity_model.HooverModel;
-
-import javax.persistence.*;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name="hoover")
-public class Hoover{
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "line")
+public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long hoover_id;
+    Long line_id;
     @Column
     String name;
     @Column
@@ -29,6 +30,7 @@ public class Hoover{
     Boolean onlineTrade;
     @Column
     Boolean credit;
-    @OneToMany(mappedBy ="c_hoover")
-    List<HooverModel> hooverModelList;
+    @OneToMany
+    @JoinColumn(name = "line_id")
+    List<Model> modelList;
 }

@@ -3,12 +3,12 @@ package com.test_case.app.controllers;
 import com.test_case.app.model.KeyOfOperations;
 import com.test_case.app.model.TypeOfOperations;
 import com.test_case.app.model.dto.AddDTO;
-import com.test_case.app.model.dto.SearchDTO;
 import com.test_case.app.model.dto.SearchResponseDTO;
-import com.test_case.app.model.entity.*;
-import com.test_case.app.model.entity.entity_model.*;
-import com.test_case.app.repository.*;
-import com.test_case.app.repository.model_repository.*;
+import com.test_case.app.model.entity.Model;
+import com.test_case.app.model.entity.User;
+import com.test_case.app.repository.LineRepository;
+import com.test_case.app.repository.ModelRepository;
+import com.test_case.app.repository.ParametersRepository;
 import com.test_case.app.service.UserService;
 import com.test_case.app.util.specification.ModelCriteria;
 import com.test_case.app.util.specification.ModelSpecification;
@@ -17,13 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,25 +31,11 @@ import java.util.List;
 @RestController
 public class UniversalController {
     @Autowired
-    PCRepository pcRepository;
+    private ModelRepository modelRepository;
     @Autowired
-    HooverRepository hooverRepository;
+    private LineRepository lineRepository;
     @Autowired
-    FridgeRepository fridgeRepository;
-    @Autowired
-    SmartPhoneRepository smartPhoneRepository;
-    @Autowired
-    TVRepository tvRepository;
-    @Autowired
-    PCModelRepository pcModelRepository;
-    @Autowired
-    HooverModelRepository hooverModelRepository;
-    @Autowired
-    FridgeModelRepository fridgeModelRepository;
-    @Autowired
-    SmartPhoneModelRepository smartPhoneModelRepository;
-    @Autowired
-    TVModelRepository tvModelRepository;
+    private ParametersRepository parametersRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -63,9 +48,9 @@ public class UniversalController {
         try {
             userForm.setRole("user");
             userForm.setPassword(passwordEncoder.encode(userForm.getPassword()));
-            if(userService.loadUserByUsername(userForm.getUsername()) == null){
+            if (userService.loadUserByUsername(userForm.getUsername()) == null) {
                 userService.saveUser(userForm);
-            }else{
+            } else {
                 throw new RuntimeException("user exists already");
             }
         } catch (RuntimeException e) {
@@ -73,172 +58,40 @@ public class UniversalController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @Operation(summary = "Добавить модель или линейку")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {
-        if (dto.getFridge() != null) {
+        if (dto.getLine() != null) {
             try {
-                fridgeRepository.save(dto.getFridge());
+                lineRepository.save(dto.getLine());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
             }
         }
-        if (dto.getFridgeModel() != null) {
-            FridgeModel fridgeModel = new FridgeModel();
-            if (fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).isPresent()) {
-                fridgeModel.setC_fridge(fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get());
-                
-                if (fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList() != null) {
-                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
+        if (dto.getModel() != null) {
+            Model model = new Model();
+            if (modelRepository.findById(dto.getModel().getId()).isPresent()) {
+                model.setC_fridge(fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get());
+
+                if (modelRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList() != null) {
+                    modelRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
                 } else {
-                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().setFridgeModelList(new ArrayList<>());
-                    fridgeRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
+                    modelRepository.findById(dto.getFridgeModel().getFridge_id()).get().setFridgeModelList(new ArrayList<>());
+                    modelRepository.findById(dto.getFridgeModel().getFridge_id()).get().getFridgeModelList().add(fridgeModel);
                 }
             }
-            fridgeModel.setModelName(dto.getFridgeModel().getModelName());
-            fridgeModel.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
-            fridgeModel.setModelColor(dto.getFridgeModel().getModelColor());
-            fridgeModel.setModelSize(dto.getFridgeModel().getModelSize());
-            fridgeModel.setModelPrice(dto.getFridgeModel().getModelPrice());
-            fridgeModel.setModelNumberOfDoors(dto.getFridgeModel().getModelNumberOfDoors());
-            fridgeModel.setModelCompressorType(dto.getFridgeModel().getModelCompressorType());
-            fridgeModel.setModelAvailability(dto.getFridgeModel().isModelAvailability());
+            model.setModelName(dto.getFridgeModel().getModelName());
+            model.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
+            model.setModelColor(dto.getFridgeModel().getModelColor());
+            model.setModelSize(dto.getFridgeModel().getModelSize());
+            model.setModelPrice(dto.getFridgeModel().getModelPrice());
+            model.setModelAvailability(dto.getFridgeModel().isModelAvailability());
             fridgeModelRepository.save(fridgeModel);
-        }
-        if (dto.getHoover() != null) {
-            try {
-                hooverRepository.save(dto.getHoover());
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getHooverModel() != null) {
-            try {
-                HooverModel model = new HooverModel();
-                if (hooverRepository.findById(dto.getHooverModel().getHoover_id()).isPresent()) {
-                    model.setC_hoover(hooverRepository.findById(dto.getHooverModel().getHoover_id()).get());
-                    
-                    if (hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList() != null) {
-                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList().add(model);
-                    } else {
-                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().setHooverModelList(new ArrayList<>());
-                        hooverRepository.findById(dto.getHooverModel().getHoover_id()).get().getHooverModelList().add(model);
-                    }
-                }
-                model.setModelName(dto.getFridgeModel().getModelName());
-                model.setModelSerialNumber(dto.getFridgeModel().getModelSerialNumber());
-                model.setModelColor(dto.getFridgeModel().getModelColor());
-                model.setModelSize(dto.getFridgeModel().getModelSize());
-                model.setModelPrice(dto.getFridgeModel().getModelPrice());
-                model.setModelNumberOfModes(dto.getHooverModel().getModelNumberOfModes());
-                model.setModelVolume(dto.getHooverModel().getModelVolume());
-                model.setModelAvailability(dto.getFridgeModel().isModelAvailability());
-                hooverModelRepository.save(model);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getTv() != null) {
-            try {
-                tvRepository.save(dto.getTv());
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getTvModel() != null) {
-            try {
-                TVModel model = new TVModel();
-                if (tvRepository.findById(dto.getTvModel().getTv_id()).isPresent()) {
-                    model.setC_tv(tvRepository.findById(dto.getTvModel().getTv_id()).get());
-                    
-                    if (tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList() != null) {
-                        tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList().add(model);
-                    } else {
-                        tvRepository.findById(dto.getTvModel().getTv_id()).get().setTvModelList(new ArrayList<>());
-                        tvRepository.findById(dto.getTvModel().getTv_id()).get().getTvModelList().add(model);
-                    }
-                }
-                model.setModelName(dto.getTvModel().getModelName());
-                model.setModelSerialNumber(dto.getTvModel().getModelSerialNumber());
-                model.setModelColor(dto.getTvModel().getModelColor());
-                model.setModelSize(dto.getTvModel().getModelSize());
-                model.setModelPrice(dto.getTvModel().getModelPrice());
-                model.setModelCategory(dto.getTvModel().getModelCategory());
-                model.setModelTechnology(dto.getTvModel().getModelTechnology());
-                model.setModelAvailability(dto.getTvModel().isModelAvailability());
-                tvModelRepository.save(model);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getPc() != null) {
-            try {
-                pcRepository.save(dto.getPc());
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getPcModel() != null) {
-            try {
-                PCModel model = new PCModel();
-                if (pcRepository.findById(dto.getPcModel().getPc_id()).isPresent()) {
-                    model.setC_pc(pcRepository.findById(dto.getPcModel().getPc_id()).get());
-                    
-                    if (pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList() != null) {
-                        pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList().add(model);
-                    } else {
-                        pcRepository.findById(dto.getPcModel().getPc_id()).get().setPcModelList(new ArrayList<>());
-                        pcRepository.findById(dto.getPcModel().getPc_id()).get().getPcModelList().add(model);
-                    }
-                }
-                model.setModelName(dto.getPcModel().getModelName());
-                model.setModelSerialNumber(dto.getPcModel().getModelSerialNumber());
-                model.setModelColor(dto.getPcModel().getModelColor());
-                model.setModelSize(dto.getPcModel().getModelSize());
-                model.setModelPrice(dto.getPcModel().getModelPrice());
-                model.setModelCategory(dto.getPcModel().getModelCategory());
-                model.setModelTypeOfProcessor(dto.getPcModel().getModelTypeOfProcessor());
-                model.setModelAvailability(dto.getPcModel().isModelAvailability());
-                pcModelRepository.save(model);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getSmartPhone() != null) {
-            try {
-                smartPhoneRepository.save(dto.getSmartPhone());
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (dto.getSmartPhoneModel() != null) {
-            try {
-                SmartPhoneModel model = new SmartPhoneModel();
-                if (smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).isPresent()) {
-                    model.setC_smartPhone(smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get());
-                    
-                    if (smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList() != null) {
-                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList().add(model);
-                    } else {
-                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().setSmartPhoneModelList(new ArrayList<>());
-                        smartPhoneRepository.findById(dto.getSmartPhoneModel().getSmartphone_id()).get().getSmartPhoneModelList().add(model);
-                    }
-                }
-                model.setModelName(dto.getSmartPhoneModel().getModelName());
-                model.setModelSerialNumber(dto.getSmartPhoneModel().getModelSerialNumber());
-                model.setModelColor(dto.getSmartPhoneModel().getModelColor());
-                model.setModelSize(dto.getSmartPhoneModel().getModelSize());
-                model.setModelPrice(dto.getSmartPhoneModel().getModelPrice());
-                model.setModelMemory(dto.getSmartPhoneModel().getModelMemory());
-                model.setModelNumberOfCameras(dto.getSmartPhoneModel().getModelNumberOfCameras());
-                model.setModelAvailability(dto.getSmartPhoneModel().isModelAvailability());
-                smartPhoneModelRepository.save(model);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-            }
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @Operation(summary = "Получить список моделей")
     @PostMapping("/get")
     public ResponseEntity<SearchResponseDTO> get(@RequestBody SearchDTO dto) throws RuntimeException {

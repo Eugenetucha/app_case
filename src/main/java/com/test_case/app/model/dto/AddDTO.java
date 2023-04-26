@@ -7,14 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AddDTO {
-    TV tv;
-    SmartPhone smartPhone;
-    PC pc;
-    Hoover hoover;
-    Fridge fridge;
-    TVModelDTO tvModel;
-    SmartPhoneModelDTO smartPhoneModel;
-    PCModelDTO pcModel;
-    HooverModelDTO hooverModel;
-    FridgeModelDTO fridgeModel;
+    Line line;
+    Model model;
+    Parameters parameters;
 }

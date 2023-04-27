@@ -19,7 +19,7 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    Long line_id;
+    Long id;
     @Column
     String name;
     @Column

@@ -19,4 +19,6 @@ public class Parameters {
     String key;
     @Column
     String value;
+    @ManyToOne
+    private Model model                         ;
 }

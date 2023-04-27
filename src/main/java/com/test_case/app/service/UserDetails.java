@@ -3,20 +3,19 @@ package com.test_case.app.service;
 import com.test_case.app.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
     private final User user;
     private final String username;
     private final String password;
 
     private final List<GrantedAuthority> rolesAndAuthorities;
 
-    public UserDetailsImpl(User user) {
+    public UserDetails(User user) {
         this.user = user;
         username = user.getUsername();
         password = user.getPassword();

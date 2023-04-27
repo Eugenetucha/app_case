@@ -31,5 +31,6 @@ public class Model {
     @OneToMany
     @JoinColumn(name = "model_id")
     List<Parameters> parametersList;
-
+    @ManyToOne
+    private Line line;
 }

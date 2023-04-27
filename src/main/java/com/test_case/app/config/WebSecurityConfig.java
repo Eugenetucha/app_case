@@ -1,6 +1,6 @@
 package com.test_case.app.config;
 
-import com.test_case.app.service.UserDetailsServiceImpl;
+import com.test_case.app.service.UserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,13 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    UserDetailsService userDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         try {
             auth.userDetailsService(userDetailsService).passwordEncoder(getEncoder());
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             log.error(e.getMessage());
         }
     }
@@ -33,9 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.
                 csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/add").permitAll()
-                .antMatchers("/swagger-ui-custom.html").permitAll()
-                .antMatchers("/get").permitAll();
+                .antMatchers("/add").authenticated()
+                .antMatchers("/swagger-ui-custom.html").authenticated()
+                .antMatchers("/get").authenticated();
         httpSecurity.authorizeRequests().and().formLogin()
                 .loginProcessingUrl("/login")
                 .loginPage("/login")

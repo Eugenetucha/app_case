@@ -21,9 +21,6 @@ public class ParametersService {
         }
         param.setValue(dto.getParametersDTO().getValue());
     }
-    public void findByName(String value) {
-        parametersRepository.findByName(value);
-    }
     public void save(Parameters parameters) {
         parametersRepository.save(parameters);
     }

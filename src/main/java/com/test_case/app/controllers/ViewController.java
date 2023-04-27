@@ -12,4 +12,9 @@ public class ViewController {
         model.addAttribute("User", new User());
         return "/login";
     }
+    @GetMapping("/register")
+    String register(Model model) {
+        model.addAttribute("User", new User());
+        return "/register";
+    }
 }

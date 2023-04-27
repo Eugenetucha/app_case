@@ -18,9 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -38,20 +40,21 @@ public class UniversalController {
 
     @Operation(summary = "Регистрация")
     @PostMapping("/registration")
-    public ResponseEntity<String> addUser(@RequestBody User userForm, BindingResult bindingResult, Model model) {
+    public RedirectView addUser(@ModelAttribute("employee")User user) {
 
         try {
-            userForm.setRole("user");
-            userForm.setPassword(passwordEncoder.encode(userForm.getPassword()));
-            if (userService.loadUserByUsername(userForm.getUsername()) == null) {
-                userService.saveUser(userForm);
+            user.setRole("user");
+            user.setAccountNonLocked(true);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (userService.loadUserByUsername(user.getUsername()) == null) {
+                userService.saveUser(user);
             } else {
                 throw new RuntimeException("user exists already");
             }
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new RedirectView("/login");
     }
 
     @Operation(summary = "Добавить модель,линейку или параметр")

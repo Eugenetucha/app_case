@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ParametersRepository extends JpaRepository<Parameters, Long> , JpaSpecificationExecutor<Parameters> {
-
-    List<Parameters> findByKeyAndValue(String key);
+    List<Parameters> findByKeyAndValue(String key,String value);
 }

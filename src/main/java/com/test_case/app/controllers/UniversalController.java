@@ -19,9 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Slf4j
 @RestController
 public class UniversalController {
@@ -102,7 +99,7 @@ public class UniversalController {
             @RequestParam(required = false) String param) throws RuntimeException {
         SearchResponseDTO searchResponseDTO = new SearchResponseDTO();
         try {
-            searchResponseDTO.setModelList(modelService.getListWithParam(name,type, color, price, param));
+            searchResponseDTO.setModelList(modelService.getListWithParam(name, type, color, price, param));
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }

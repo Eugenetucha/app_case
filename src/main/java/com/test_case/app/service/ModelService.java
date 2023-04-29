@@ -72,7 +72,6 @@ public class ModelService {
             String line_search = name.toLowerCase().trim();
             Specification<Model> specification = findByLineName(line_search);
             return modelRepository.findAll(specification);
-
         } else {
             Specification<Parameters> specification_param = findParameters(param);
             Specification<Model> specification_model = findSpecModelWithParam(specification_param);
@@ -94,7 +93,8 @@ public class ModelService {
         Specification<Model> specification = new Specification<Model>() {
             @Override
             public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                return null;
+                return criteriaBuilder.equal(
+                        root.get("model_color"), "%" + "%");
             }
         };
         try {

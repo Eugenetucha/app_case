@@ -7,6 +7,7 @@ import com.test_case.app.model.entity.Parameters;
 import com.test_case.app.repository.LineRepository;
 import com.test_case.app.repository.ModelRepository;
 import com.test_case.app.repository.ParametersRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ModelService {
     @Autowired
     ModelRepository modelRepository;
@@ -29,49 +31,87 @@ public class ModelService {
     ParametersRepository parametersRepository;
 
     public void addModel(Model model, AddDTO dto) {
-        model.setModelName(dto.getModelDTO().getModelName());
-        model.setModelSerialNumber(dto.getModelDTO().getModelSerialNumber());
-        model.setModelColor(dto.getModelDTO().getModelColor());
-        model.setModelSize(dto.getModelDTO().getModelSize());
-        model.setModelPrice(dto.getModelDTO().getModelPrice());
-        model.setModelAvailability(dto.getModelDTO().isModelAvailability());
-        if (lineRepository.findById(dto.getModelDTO().getLine_id()).isPresent()) {
-            if (lineRepository.findById(dto.getModelDTO().getLine_id()).get().getModelList() != null) {
-                model.setLine(lineRepository.findById(dto.getModelDTO().getLine_id()).get());
-                Line line = lineRepository.findById(dto.getModelDTO().getLine_id()).get();
-                line.getModelList().add(model);
-                lineRepository.saveAndFlush(line);
-            } else {
-                model.setLine(lineRepository.findById(dto.getModelDTO().getLine_id()).get());
-                List<Model> modelList = new ArrayList<>();
-                modelList.add(model);
-                Line line = lineRepository.findById(dto.getModelDTO().getLine_id()).get();
-                line.setModelList(modelList);
-                lineRepository.saveAndFlush(line);
+        try {
+            Optional<Line> line_current = lineRepository.findById(dto.getModelDTO().getLine_id());
+            if (line_current.isPresent()) {
+                model.setModelName(dto.getModelDTO().getModelName());
+                model.setModelSerialNumber(dto.getModelDTO().getModelSerialNumber());
+                model.setModelColor(dto.getModelDTO().getModelColor());
+                model.setModelSize(dto.getModelDTO().getModelSize());
+                model.setModelPrice(dto.getModelDTO().getModelPrice());
+                model.setModelAvailability(dto.getModelDTO().isModelAvailability());
+                if (line_current.get().getModelList() != null) {
+                    model.setLine(line_current.get());
+                    Line line = line_current.get();
+                    line.getModelList().add(model);
+                    modelRepository.save(model);
+                    lineRepository.saveAndFlush(line);
+                } else {
+                    model.setLine(line_current.get());
+                    List<Model> modelList = new ArrayList<>();
+                    modelList.add(model);
+                    Line line = line_current.get();
+                    line.setModelList(modelList);
+                    modelRepository.save(model);
+                    lineRepository.saveAndFlush(line);
+                }
             }
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
         }
-        modelRepository.save(model);
     }
 
     //key:value X key:value X key:value
     //price_l::price_h
-    public List<Model> getListWithParam(String type,
+    public List<Model> getListWithParam(String name,
+                                        String type,
                                         String color,
                                         String price,
                                         String param) {
-        Specification<Parameters> specification = findParameters(param);
-        Specification<Model> specification2 = findSpecModelWithParam(specification);
-        setBaseParam(color, price, specification2);
-        for (Line line : lineRepository.findByName(type)) {
-            specification2.and(new Specification<Model>() {
-                @Override
-                public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.equal(
-                            root.get("line_id"), line.getId());
-                }
-            });
+        if (name != null) {
+            String line_search = name.toLowerCase().trim();
+            Specification<Model> specification = findByLineName(line_search);
+            return modelRepository.findAll(specification);
+
+        } else {
+            Specification<Parameters> specification_param = findParameters(param);
+            Specification<Model> specification_model = findSpecModelWithParam(specification_param);
+            setBaseParam(color, price, specification_model);
+            for (Line line : lineRepository.findByName(type)) {
+                specification_model.and(new Specification<Model>() {
+                    @Override
+                    public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                        return criteriaBuilder.equal(
+                                root.get("line_id"), line.getId());
+                    }
+                });
+            }
+            return modelRepository.findAll(specification_model);
         }
-        return modelRepository.findAll(specification2);
+    }
+
+    public Specification<Model> findByLineName(String line_search) {
+        Specification<Model> specification = new Specification<Model>() {
+            @Override
+            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
+                return null;
+            }
+        };
+        try {
+            for (Line line : lineRepository.findByName(line_search)) {
+                specification.and(new Specification<Model>() {
+                    @Override
+                    public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
+                        return criteriaBuilder.equal(
+                                root.get("line_id"), line.getId());
+                    }
+                });
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return specification;
     }
 
     public void setBaseParam(String color,

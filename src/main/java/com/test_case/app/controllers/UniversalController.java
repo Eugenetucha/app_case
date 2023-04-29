@@ -95,52 +95,17 @@ public class UniversalController {
     @Operation(summary = "Получить список моделей")
     @GetMapping("/get/full/")
     public ResponseEntity<SearchResponseDTO> get(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String param) throws RuntimeException {
         SearchResponseDTO searchResponseDTO = new SearchResponseDTO();
         try {
-            searchResponseDTO.setModelList(modelService.getListWithParam(type, color, price, param));
+            searchResponseDTO.setModelList(modelService.getListWithParam(name,type, color, price, param));
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }
         return new ResponseEntity<>(searchResponseDTO, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Получить список моделей")
-    @GetMapping("/get/name")
-    public ResponseEntity<SearchResponseDTO> get(@RequestParam(required = true) String name) throws RuntimeException {
-        SearchResponseDTO dto1 = new SearchResponseDTO();
-        String line_search = name.toLowerCase().trim();
-        try {
-            if (lineService.findByName(line_search) != null) {
-                for (Line line : lineService.findByName(line_search)) {
-                    List<Model> modelList = new ArrayList<>();
-                    if (line.getModelList() != null) {
-                        String model = line_search.replace(line.getName(), "");
-                        if (!model.isEmpty()) {
-                            for (Model model1 : line.getModelList()) {
-                                if (model1.getModelName().equals(model)) {
-                                    modelList.add(model1);
-                                }
-                            }
-                        } else {
-                            modelList = line.getModelList();
-                        }
-                        dto1.setModelList(modelList);
-                    } else {
-                        dto1.setError("не найдены модели для линейки");
-                        return new ResponseEntity<>(dto1, HttpStatus.NOT_FOUND);
-                    }
-                }
-            } else {
-                dto1.setError("не найдена линейки с таким названием");
-                return new ResponseEntity<>(dto1, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return new ResponseEntity<>(dto1, HttpStatus.OK);
     }
 }

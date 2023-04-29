@@ -19,22 +19,23 @@ public class ParametersService {
     ModelRepository modelRepository;
 
     public void addParameters(Parameters param, AddDTO dto) {
-        param.setValue(dto.getParametersDTO().getValue());
-        param.setKey(dto.getParametersDTO().getKey());
         if (modelRepository.findById(dto.getParametersDTO().getModel_id()).isPresent()) {
+            param.setValue(dto.getParametersDTO().getValue());
+            param.setKey(dto.getParametersDTO().getKey());
             param.setModel(modelRepository.findById(dto.getParametersDTO().getModel_id()).get());
             if (modelRepository.findById(dto.getParametersDTO().getModel_id()).get().getParametersList() != null) {
                 Model model = modelRepository.findById(dto.getParametersDTO().getModel_id()).get();
                 model.getParametersList().add(param);
+                parametersRepository.saveAndFlush(param);
                 modelRepository.saveAndFlush(model);
             } else {
                 Model model = modelRepository.findById(dto.getParametersDTO().getModel_id()).get();
                 List<Parameters> parameters = new ArrayList<>();
                 parameters.add(param);
                 model.setParametersList(parameters);
+                parametersRepository.saveAndFlush(param);
                 modelRepository.saveAndFlush(model);
             }
         }
-        parametersRepository.save(param);
     }
 }

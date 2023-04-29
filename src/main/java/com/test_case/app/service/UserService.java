@@ -23,6 +23,6 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveUser(User user) {
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
     }
 }

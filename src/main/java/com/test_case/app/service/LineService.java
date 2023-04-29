@@ -15,6 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -40,6 +41,9 @@ public class LineService {
     }
     public List<Line> findByName(String value) {
         return lineRepository.findByName(value);
+    }
+    public Optional<Line> findById(Long id) {
+        return lineRepository.findById(id);
     }
 
     public void save(Line line) {

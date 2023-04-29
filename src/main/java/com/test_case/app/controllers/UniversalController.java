@@ -16,13 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -40,7 +38,7 @@ public class UniversalController {
 
     @Operation(summary = "Регистрация")
     @PostMapping("/registration")
-    public RedirectView addUser(@ModelAttribute("employee")User user) {
+    public RedirectView addUser(@ModelAttribute("employee") User user) {
 
         try {
             user.setRole("user");
@@ -57,6 +55,7 @@ public class UniversalController {
         return new RedirectView("/login");
     }
 
+    //todo тут окончательно перенести логику в сервис и все покрыть исключениями
     @Operation(summary = "Добавить модель,линейку или параметр")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {
@@ -80,7 +79,6 @@ public class UniversalController {
             } catch (RuntimeException e) {
                 throw new RuntimeException("Не получилось сохранить модель");
             }
-            modelService.save(model);
         }
         if (dto.getParametersDTO() != null) {
             Parameters parameters = new Parameters();
@@ -89,11 +87,11 @@ public class UniversalController {
             } catch (RuntimeException e) {
                 throw new RuntimeException("Не получилось сохранить параметр");
             }
-            parametersService.save(parameters);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //http://localhost:8080/get/full/?type=112&color=Jon
     @Operation(summary = "Получить список моделей")
     @GetMapping("/get/full/")
     public ResponseEntity<SearchResponseDTO> get(
@@ -107,30 +105,38 @@ public class UniversalController {
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }
-        return new ResponseEntity<>(searchResponseDTO,HttpStatus.OK);
+        return new ResponseEntity<>(searchResponseDTO, HttpStatus.OK);
     }
 
     @Operation(summary = "Получить список моделей")
     @GetMapping("/get/name")
-    public ResponseEntity<SearchResponseDTO> get(@RequestParam(required = true) String full_name) throws RuntimeException {
+    public ResponseEntity<SearchResponseDTO> get(@RequestParam(required = true) String name) throws RuntimeException {
         SearchResponseDTO dto1 = new SearchResponseDTO();
-        String line_search = full_name.toLowerCase().trim();
+        String line_search = name.toLowerCase().trim();
         try {
-            for (Line line : lineService.findByName(full_name)) {
-                List<Model> modelList = new ArrayList<>();
-                if (line.getModelList() != null) {
-                    String model = full_name.replace(line.getName(), "");
-                    if (!model.equals("")) {
-                        for (Model model1 : line.getModelList()) {
-                            if (model1.getModelName().equals(model)) {
-                                modelList.add(model1);
+            if (lineService.findByName(line_search) != null) {
+                for (Line line : lineService.findByName(line_search)) {
+                    List<Model> modelList = new ArrayList<>();
+                    if (line.getModelList() != null) {
+                        String model = line_search.replace(line.getName(), "");
+                        if (!model.isEmpty()) {
+                            for (Model model1 : line.getModelList()) {
+                                if (model1.getModelName().equals(model)) {
+                                    modelList.add(model1);
+                                }
                             }
+                        } else {
+                            modelList = line.getModelList();
                         }
+                        dto1.setModelList(modelList);
                     } else {
-                        modelList = line.getModelList();
+                        dto1.setError("не найдены модели для линейки");
+                        return new ResponseEntity<>(dto1, HttpStatus.NOT_FOUND);
                     }
-                    dto1.setModelList(modelList);
                 }
+            } else {
+                dto1.setError("не найдена линейки с таким названием");
+                return new ResponseEntity<>(dto1, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             log.error(e.getMessage());

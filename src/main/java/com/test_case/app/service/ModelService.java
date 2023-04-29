@@ -17,6 +17,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ModelService {
@@ -28,20 +29,28 @@ public class ModelService {
     ParametersRepository parametersRepository;
 
     public void addModel(Model model, AddDTO dto) {
-        if (lineRepository.findById(dto.getModelDTO().getLine_id()).isPresent()) {
-            if (lineRepository.findById(dto.getModelDTO().getLine_id()).get().getModelList() != null) {
-                lineRepository.findById(dto.getModelDTO().getLine_id()).get().getModelList().add(model);
-            } else {
-                lineRepository.findById(dto.getModelDTO().getLine_id()).get().setModelList(new ArrayList<>());
-                lineRepository.findById(dto.getModelDTO().getLine_id()).get().getModelList().add(model);
-            }
-        }
         model.setModelName(dto.getModelDTO().getModelName());
         model.setModelSerialNumber(dto.getModelDTO().getModelSerialNumber());
         model.setModelColor(dto.getModelDTO().getModelColor());
         model.setModelSize(dto.getModelDTO().getModelSize());
         model.setModelPrice(dto.getModelDTO().getModelPrice());
         model.setModelAvailability(dto.getModelDTO().isModelAvailability());
+        if (lineRepository.findById(dto.getModelDTO().getLine_id()).isPresent()) {
+            if (lineRepository.findById(dto.getModelDTO().getLine_id()).get().getModelList() != null) {
+                model.setLine(lineRepository.findById(dto.getModelDTO().getLine_id()).get());
+                Line line = lineRepository.findById(dto.getModelDTO().getLine_id()).get();
+                line.getModelList().add(model);
+                lineRepository.saveAndFlush(line);
+            } else {
+                model.setLine(lineRepository.findById(dto.getModelDTO().getLine_id()).get());
+                List<Model> modelList = new ArrayList<>();
+                modelList.add(model);
+                Line line = lineRepository.findById(dto.getModelDTO().getLine_id()).get();
+                line.setModelList(modelList);
+                lineRepository.saveAndFlush(line);
+            }
+        }
+        modelRepository.save(model);
     }
 
     //key:value X key:value X key:value
@@ -109,6 +118,10 @@ public class ModelService {
         return specification;
     }
 
+    public Optional<Model> findById(Long id) {
+        return modelRepository.findById(id);
+    }
+
     public Specification<Model> findSpecModelWithParam(Specification<Parameters> specification) {
         Specification<Model> specification2 = new Specification<Model>() {
             @Override
@@ -126,9 +139,5 @@ public class ModelService {
             });
         }
         return specification2;
-    }
-
-    public void save(Model model) {
-        modelRepository.save(model);
     }
 }

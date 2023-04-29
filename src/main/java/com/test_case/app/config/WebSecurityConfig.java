@@ -33,18 +33,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.
                 csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/add").authenticated()
-                .antMatchers("/swagger-ui-custom.html").authenticated()
-                .antMatchers("/get").authenticated();
-        httpSecurity.authorizeRequests().and().formLogin()
+                .antMatchers("/register")
+                .permitAll()
+                .and().formLogin()
                 .loginProcessingUrl("/login")
                 .loginPage("/login")
                 .defaultSuccessUrl("/swagger-ui-custom.html")
                 .failureUrl("/login?error=true")
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/");
+                .and().logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/");
     }
 
     @Bean

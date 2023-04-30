@@ -52,7 +52,7 @@ public class UniversalController {
         return new RedirectView("/login");
     }
 
-    //todo тут окончательно перенести логику в сервис и все покрыть исключениями
+    //todo тут окончательно перенести логику в сервис и все покрыть исключениями и убрать не только логику но и исключения внутрь
     @Operation(summary = "Добавить модель,линейку или параметр")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {

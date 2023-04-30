@@ -7,6 +7,7 @@ import com.test_case.app.model.entity.Parameters;
 import com.test_case.app.repository.LineRepository;
 import com.test_case.app.repository.ModelRepository;
 import com.test_case.app.repository.ParametersRepository;
+import com.test_case.app.util.CustomSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,6 +30,12 @@ public class ModelService {
     LineRepository lineRepository;
     @Autowired
     ParametersRepository parametersRepository;
+    @Autowired
+    CustomSpec<Model> modelCustomSpec;
+    @Autowired
+    CustomSpec<Line> lineCustomSpec;
+    @Autowired
+    CustomSpec<Parameters> parametersCustomSpec;
 
     public void addModel(Model model, AddDTO dto) {
         try {
@@ -88,24 +95,29 @@ public class ModelService {
             return modelRepository.findAll(specification_model);
         }
     }
-
-    public Specification<Model> findByLineName(String line_search) {
-        Specification<Model> specification = new Specification<Model>() {
-            @Override
-            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(
-                        root.get("model_color"), "%" + "%");
-            }
-        };
+    public Specification<Model> findByLineId(String line_search) {
+        Specification<Model> specification = null;
+        specification = specification.and(null);
         try {
             for (Line line : lineRepository.findByName(line_search)) {
-                specification.and(new Specification<Model>() {
-                    @Override
-                    public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                        return criteriaBuilder.equal(
-                                root.get("line_id"), line.getId());
-                    }
-                });
+                specification.and(
+                        modelCustomSpec.findEq("line_id", line.getId())
+                );
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return specification;
+    }
+    public Specification<Model> findByLineName(String line_search) {
+        Specification<Model> specification = null;
+        specification = specification.and(null);
+        try {
+            for (Line line : lineRepository.findByName(line_search)) {
+                specification.and(
+                        modelCustomSpec.findEq("line_id", line.getId())
+                );
             }
 
         } catch (Exception e) {
@@ -115,45 +127,29 @@ public class ModelService {
     }
 
     public void setBaseParam(String color,
-                             String price, Specification<Model> specification2) {
+                             String price, Specification<Model> specification) {
         if (color != null) {
-            specification2.and(new Specification<Model>() {
-                @Override
-                public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.equal(
-                            root.get("modelColor"), color);
-                }
-            });
+            specification.and(
+                    modelCustomSpec.findLike("modelColor", color)
+            );
         }
         if (price != null) {
-            specification2.and(new Specification<Model>() {
-                @Override
-                public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.between(
-                            root.get("modelColor"), price.split("::")[0],
-                            price.split("::")[1]);
-                }
-            });
+            specification.and(
+                    modelCustomSpec.findBetween("modelColor", Integer.parseInt(price.split("::")[0]),
+                            Integer.parseInt(price.split("::")[1]))
+            );
         }
     }
 
     public Specification<Parameters> findParameters(String param) {
-        Specification<Parameters> specification = new Specification<Parameters>() {
-            @Override
-            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                return null;
-            }
-        };
+        Specification<Parameters> specification = null;
+        specification = specification.and(null);
         for (String key_value : param.split("X")) {
             String key = key_value.split(":")[0];
             String value = key_value.split(":")[1];
-            specification.and(new Specification<Parameters>() {
-                @Override
-                public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.like(
-                            root.get(key), "%" + value + "%");
-                }
-            });
+            specification.and(
+                    parametersCustomSpec.findLike(key, value)
+            );
         }
         return specification;
     }
@@ -163,20 +159,12 @@ public class ModelService {
     }
 
     public Specification<Model> findSpecModelWithParam(Specification<Parameters> specification) {
-        Specification<Model> specification2 = new Specification<Model>() {
-            @Override
-            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                return null;
-            }
-        };
+        Specification<Model> specification2 = null;
+        specification2 = specification2.and(null);
         for (Parameters parameters : parametersRepository.findAll(specification)) {
-            specification2.and(new Specification<Model>() {
-                @Override
-                public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                    return criteriaBuilder.equal(
-                            root.get("model_id"), parameters.getModel().getId());
-                }
-            });
+            specification2.and(
+                    modelCustomSpec.findEq("model_id", parameters.getModel().getId())
+            );
         }
         return specification2;
     }

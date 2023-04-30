@@ -1,4 +1,4 @@
-package com.test_case.app.model.entity.dto;
+package com.test_case.app.model.dto;
 
 import lombok.Data;
 

@@ -34,7 +34,6 @@ public class CustomSpec<T> {
             }
         };
     }
-
     public Specification<T> findLike(String key, Object value) {
         return new Specification<T>() {
             @Override

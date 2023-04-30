@@ -98,11 +98,7 @@ public class UniversalController {
             @RequestParam(required = false) String price,
             @RequestParam(required = false) String param) throws RuntimeException {
         SearchResponseDTO searchResponseDTO = new SearchResponseDTO();
-        try {
-            searchResponseDTO.setModelList(modelService.getListWithParam(name, type, color, price, param));
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
-        }
+        searchResponseDTO.setModelList(modelService.getListWithParam(name, type, color, price, param));
         return new ResponseEntity<>(searchResponseDTO, HttpStatus.OK);
     }
 }

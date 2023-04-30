@@ -39,8 +39,9 @@ public class LineService {
         }
         line.setModelList(modelList);
     }
-    public List<Line> findByName(String value) {
-        return lineRepository.findByName(value);
+    //todo поменять тут и не только чтобы везде кроме самих внтруков сервайса исполдьзовались сервисы
+    public List<Line> findAllByName(String value) {
+        return lineRepository.findAllByName(value);
     }
     public Optional<Line> findById(Long id) {
         return lineRepository.findById(id);

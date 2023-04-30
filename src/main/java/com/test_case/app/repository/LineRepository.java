@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificationExecutor {
-
-    List<Line> findByName(String name);
+public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificationExecutor<Line> {
+    List<Line> findAllByName(String name);
 }

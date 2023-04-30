@@ -1,6 +1,7 @@
 package com.test_case.app.service;
 
 import com.test_case.app.model.entity.User;
+import com.test_case.app.model.entity.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

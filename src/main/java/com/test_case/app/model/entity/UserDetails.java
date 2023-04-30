@@ -1,4 +1,4 @@
-package com.test_case.app.service;
+package com.test_case.app.model.entity;
 
 import com.test_case.app.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;

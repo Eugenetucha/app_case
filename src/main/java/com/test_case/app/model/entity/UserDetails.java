@@ -1,6 +1,5 @@
 package com.test_case.app.model.entity;
 
-import com.test_case.app.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

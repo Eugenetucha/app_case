@@ -6,7 +6,6 @@ import com.test_case.app.model.entity.Line;
 import com.test_case.app.model.entity.Model;
 import com.test_case.app.model.entity.Parameters;
 import com.test_case.app.repository.ModelRepository;
-import com.test_case.app.util.CustomSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -30,11 +28,11 @@ public class ModelService {
     @Autowired
     ParametersService parametersService;
     @Autowired
-    CustomSpec<Model> modelCustomSpec;
+    CustomSpecification<Model> modelCustomSpec;
     @Autowired
-    CustomSpec<Line> lineCustomSpec;
+    CustomSpecification<Line> lineCustomSpec;
     @Autowired
-    CustomSpec<Parameters> parametersCustomSpec;
+    CustomSpecification<Parameters> parametersCustomSpec;
 
     public void saveAndFlush(Model model) {
         modelRepository.saveAndFlush(model);
@@ -70,6 +68,7 @@ public class ModelService {
             log.error(e.getMessage());
         }
     }
+
     //todo переписать readme и сделать миграцию данных
     //price_l::price_hf
     public List<ModelDTO> getListWithParam(String name,
@@ -142,7 +141,7 @@ public class ModelService {
         } catch (RuntimeException e) {
             throw new RuntimeException("Не удалось найти линейки с таким именем");
         }
-        if(line_search.split("\\s").length > 1){
+        if (line_search.split("\\s").length > 1) {
             specification = where(specification).and(
                     modelCustomSpec.findLike("modelName", line_search.split("\\s")[1])
             );

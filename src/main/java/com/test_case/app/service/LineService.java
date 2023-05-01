@@ -40,6 +40,7 @@ public class LineService {
         line.setModelList(modelList);
     }
     //todo поменять тут и не только чтобы везде кроме самих внтруков сервайса исполдьзовались сервисы
+    //проверить на нулевые значения
     public List<Line> findAllByName(String value) {
         return lineRepository.findAllByName(value);
     }

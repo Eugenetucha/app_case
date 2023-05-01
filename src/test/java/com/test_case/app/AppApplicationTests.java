@@ -8,7 +8,6 @@ class AppApplicationTests {
 
     @Test
     void contextLoads() {
-        //todo
     }
 
 }

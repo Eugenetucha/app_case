@@ -23,15 +23,6 @@ public class CustomSpec<T> {
             }
         };
     }
-    public Specification<T> findEq2(String key, Object value) {
-        return new Specification<T>() {
-            @Override
-            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.in(
-                        root.get(key), criteriaBuilder.equal(value));
-            }
-        };
-    }
 
     public Specification<T> findBetween(String key, Integer from, Integer to) {
         return new Specification<T>() {

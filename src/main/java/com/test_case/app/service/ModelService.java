@@ -10,15 +10,10 @@ import com.test_case.app.repository.ModelRepository;
 import com.test_case.app.repository.ParametersRepository;
 import com.test_case.app.util.CustomSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.criteria.internal.predicate.InPredicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +63,7 @@ public class ModelService {
                 }
             }
         } catch (RuntimeException e) {
-            log.error(e.getMessage() + "tut2");
+            log.error(e.getMessage());
         }
     }
 
@@ -79,25 +74,23 @@ public class ModelService {
                                            String price,
                                            String param) {
         List<ModelDTO> modelDTOS = new ArrayList<>();
-        Specification<Model> specification = new Specification<Model>() {
-            @Override
-            public Predicate toPredicate(Root<Model> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.greaterThan(root.get("id"), -1);
-            }
-        };
+        Specification<Model> specification = Specification.where(null);
 
         if (name != null) {
-            findByFullName(name,specification);
+            specification = where(specification).and(findByFullName(name, specification));
         } else {
-            if (param != null) {
-                specification.and(findSpecModelWithParam(findParameters(param)));
-            }
-            if (color != null) {
-                specification = where(specification).and(modelCustomSpec.findLike("modelColor", color));
-            }
-            if (price != null) {
-                specification.and(modelCustomSpec.findBetween("modelPrice", Integer.parseInt(price.split("::")[0]),
-                        Integer.parseInt(price.split("::")[1])));
+            if (type != null) {
+                specification = where(specification).and(findByType(type, specification));
+                if (param != null) {
+                    specification = where(specification).and(findSpecModelWithParam(specification, findParameters(param)));
+                }
+                if (color != null) {
+                    specification = where(specification).and(modelCustomSpec.findLike("modelColor", color));
+                }
+                if (price != null) {
+                    specification = where(specification).and(modelCustomSpec.findBetween("modelPrice", Integer.parseInt(price.split("::")[0]),
+                            Integer.parseInt(price.split("::")[1])));
+                }
             }
 
         }
@@ -119,13 +112,26 @@ public class ModelService {
         return modelDTOS;
     }
 
-    private void findByFullName(String line_search, Specification<Model> specification) {
-        for (Line line : lineRepository.findAllByName(line_search)) {
-
+    public Specification<Model> findByFullName(String line_search, Specification<Model> specification) {
+        for (Line line1 : lineRepository.findAllByName(line_search.split("\\s")[0])) {
+            specification = where(specification).or(
+                    modelCustomSpec.findEq("line", line1)
+            );
         }
         specification = where(specification).and(
-                modelCustomSpec.findEq("line", line)
+                modelCustomSpec.findLike("modelName", line_search.split("\\s")[1])
         );
+        return specification;
+    }
+
+    public Specification<Model> findByType(String line_search, Specification<Model> specification) {
+
+        for (Line line1 : lineRepository.findAllByName(line_search)) {
+            specification = where(specification).or(
+                    modelCustomSpec.findEq("line", line1)
+            );
+        }
+        return specification;
     }
 
     public Specification<Parameters> findParameters(String param) {
@@ -133,10 +139,10 @@ public class ModelService {
         for (String key_value : param.split("X")) {
             String key = key_value.split("::")[0];
             String value = key_value.split("::")[1];
-            specification.and(
+            specification = where(specification).and(
                     parametersCustomSpec.findLike("key", key)
             );
-            specification.and(
+            specification = where(specification).and(
                     parametersCustomSpec.findLike("value", value)
             );
         }
@@ -147,15 +153,12 @@ public class ModelService {
         return modelRepository.findById(id);
     }
 
-    public Specification<Model> findSpecModelWithParam(Specification<Parameters> specification) {
-        Specification<Model> specification2 = where(null);
-        for (Parameters parameters : parametersRepository.findAll(specification)) {
-            log.error("param id" + parameters.getId());
-            specification2.and(
-                    modelCustomSpec.findEq("model_id", parameters.getModel().getId())
+    public Specification<Model> findSpecModelWithParam(Specification<Model> specification_model, Specification<Parameters> specification_param) {
+        for (Parameters parameters : parametersRepository.findAll(specification_param)) {
+            specification_model = where(specification_model).and(
+                    modelCustomSpec.findEq("id", parameters.getModel().getId())
             );
-            log.error("modelid" + parameters.getModel().getId());
         }
-        return specification2;
+        return specification_model;
     }
 }

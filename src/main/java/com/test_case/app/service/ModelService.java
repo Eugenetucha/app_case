@@ -5,9 +5,7 @@ import com.test_case.app.model.dto.ModelDTO;
 import com.test_case.app.model.entity.Line;
 import com.test_case.app.model.entity.Model;
 import com.test_case.app.model.entity.Parameters;
-import com.test_case.app.repository.LineRepository;
 import com.test_case.app.repository.ModelRepository;
-import com.test_case.app.repository.ParametersRepository;
 import com.test_case.app.util.CustomSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +24,21 @@ public class ModelService {
     @Autowired
     ModelRepository modelRepository;
     @Autowired
-    LineRepository lineRepository;
+    LineService lineService;
     @Autowired
-    ParametersRepository parametersRepository;
+    ParametersService parametersService;
     @Autowired
     CustomSpec<Model> modelCustomSpec;
     @Autowired
     CustomSpec<Line> lineCustomSpec;
     @Autowired
     CustomSpec<Parameters> parametersCustomSpec;
-
+    public void saveAndFlush(Model model){
+        modelRepository.saveAndFlush(model);
+    }
     public void addModel(Model model, AddDTO dto) {
         try {
-            Optional<Line> lineCurrent = lineRepository.findById(dto.getModelDTO().getLine_id());
+            Optional<Line> lineCurrent = lineService.findById(dto.getModelDTO().getLine_id());
             if (lineCurrent.isPresent()) {
                 model.setModelName(dto.getModelDTO().getModelName());
                 model.setModelSerialNumber(dto.getModelDTO().getModelSerialNumber());
@@ -51,7 +51,7 @@ public class ModelService {
                     Line line = lineCurrent.get();
                     line.getModelList().add(model);
                     modelRepository.save(model);
-                    lineRepository.saveAndFlush(line);
+                    lineService.saveAndFlush(line);
                 } else {
                     model.setLine(lineCurrent.get());
                     List<Model> modelList = new ArrayList<>();
@@ -59,7 +59,7 @@ public class ModelService {
                     Line line = lineCurrent.get();
                     line.setModelList(modelList);
                     modelRepository.save(model);
-                    lineRepository.saveAndFlush(line);
+                    lineService.saveAndFlush(line);
                 }
             }
         } catch (RuntimeException e) {
@@ -113,7 +113,7 @@ public class ModelService {
     }
 
     public Specification<Model> findByFullName(String line_search, Specification<Model> specification) {
-        for (Line line1 : lineRepository.findAllByName(line_search.split("\\s")[0])) {
+        for (Line line1 : lineService.findAllByName(line_search.split("\\s")[0])) {
             specification = where(specification).or(
                     modelCustomSpec.findEq("line", line1)
             );
@@ -126,7 +126,7 @@ public class ModelService {
 
     public Specification<Model> findByType(String line_search, Specification<Model> specification) {
 
-        for (Line line1 : lineRepository.findAllByName(line_search)) {
+        for (Line line1 : lineService.findAllByName(line_search)) {
             specification = where(specification).or(
                     modelCustomSpec.findEq("line", line1)
             );
@@ -154,7 +154,7 @@ public class ModelService {
     }
 
     public Specification<Model> findSpecModelWithParam(Specification<Model> specification_model, Specification<Parameters> specification_param) {
-        for (Parameters parameters : parametersRepository.findAll(specification_param)) {
+        for (Parameters parameters : parametersService.findAll(specification_param)) {
             specification_model = where(specification_model).and(
                     modelCustomSpec.findEq("id", parameters.getModel().getId())
             );

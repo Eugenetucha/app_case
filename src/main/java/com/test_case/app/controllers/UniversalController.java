@@ -38,11 +38,15 @@ public class UniversalController {
     public RedirectView addUser(@ModelAttribute("employee") User user) {
 
         try {
-            user.setRole("user");
-            user.setAccountNonLocked(true);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
             if (userService.loadUserByUsername(user.getUsername()) == null) {
-                userService.saveUser(user);
+                try {
+                    user.setRole("user");
+                    user.setAccountNonLocked(true);
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+                    userService.saveUser(user);
+                } catch (RuntimeException e) {
+                    throw new RuntimeException("Не получилось сохранить пользователя");
+                }
             } else {
                 throw new RuntimeException("user exists already");
             }
@@ -52,34 +56,33 @@ public class UniversalController {
         return new RedirectView("/login");
     }
 
-    //todo тут окончательно перенести логику в сервис и все покрыть исключениями и убрать не только логику но и исключения внутрь
     @Operation(summary = "Добавить модель,линейку или параметр")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody AddDTO dto) throws RuntimeException {
         if (dto.getLineDTO() != null) {
             try {
-                Line line = new Line();
                 try {
+                    Line line = new Line();
                     lineService.addLine(line, dto);
+                    lineService.save(line);
                 } catch (RuntimeException e) {
                     throw new RuntimeException("Не получилось сохранить линейку");
                 }
-                lineService.save(line);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
             }
         }
         if (dto.getModelDTO() != null) {
-            Model model = new Model();
             try {
+                Model model = new Model();
                 modelService.addModel(model, dto);
             } catch (RuntimeException e) {
                 throw new RuntimeException("Не получилось сохранить модель");
             }
         }
         if (dto.getParametersDTO() != null) {
-            Parameters parameters = new Parameters();
             try {
+                Parameters parameters = new Parameters();
                 parametersService.addParameters(parameters, dto);
             } catch (RuntimeException e) {
                 throw new RuntimeException("Не получилось сохранить параметр");
@@ -96,9 +99,11 @@ public class UniversalController {
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) String price,
-            @RequestParam(required = false) String param) throws RuntimeException {
+            @RequestParam(required = false) String param,
+            @RequestParam(required = false) Boolean sortNumbers,
+            @RequestParam(required = false) Boolean sortLetters) throws RuntimeException {
         SearchResponseDTO searchResponseDTO = new SearchResponseDTO();
-        searchResponseDTO.setModelList(modelService.getListWithParam(name, type, color, price, param));
+        searchResponseDTO.setModelList(modelService.getListWithParam(name, type, color, price, param, sortNumbers, sortLetters));
         return new ResponseEntity<>(searchResponseDTO, HttpStatus.OK);
     }
 }

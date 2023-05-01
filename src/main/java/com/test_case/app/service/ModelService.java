@@ -13,8 +13,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -33,9 +35,11 @@ public class ModelService {
     CustomSpec<Line> lineCustomSpec;
     @Autowired
     CustomSpec<Parameters> parametersCustomSpec;
-    public void saveAndFlush(Model model){
+
+    public void saveAndFlush(Model model) {
         modelRepository.saveAndFlush(model);
     }
+
     public void addModel(Model model, AddDTO dto) {
         try {
             Optional<Line> lineCurrent = lineService.findById(dto.getModelDTO().getLine_id());
@@ -72,7 +76,9 @@ public class ModelService {
                                            String type,
                                            String color,
                                            String price,
-                                           String param) {
+                                           String param,
+                                           Boolean sortNumbers,
+                                           Boolean sortLetters) {
         List<ModelDTO> modelDTOS = new ArrayList<>();
         Specification<Model> specification = Specification.where(null);
 
@@ -109,31 +115,55 @@ public class ModelService {
             modelDTO.setParametersList(paramList);
             modelDTOS.add(modelDTO);
         }
+        if (sortNumbers != null) {
+            if (sortNumbers) {
+                modelDTOS.sort(Comparator.comparingInt(ModelDTO::getModelPrice));
+            } else {
+                modelDTOS.sort(Comparator.comparingInt(ModelDTO::getModelPrice).reversed());
+            }
+        }
+        if (sortLetters != null) {
+            if (sortLetters) {
+                modelDTOS.sort(Comparator.comparing(ModelDTO::getModelName));
+            } else {
+                modelDTOS.sort(Comparator.comparing(ModelDTO::getModelName).reversed());
+            }
+        }
         return modelDTOS;
     }
 
     public Specification<Model> findByFullName(String line_search, Specification<Model> specification) {
-        for (Line line1 : lineService.findAllByName(line_search.split("\\s")[0])) {
-            specification = where(specification).or(
-                    modelCustomSpec.findEq("line", line1)
+        try {
+            for (Line line1 : lineService.findAllByName(line_search.split("\\s")[0])) {
+                specification = where(specification).or(
+                        modelCustomSpec.findEq("line", line1)
+                );
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Не удалось найти линейки с таким именем");
+        }
+        if(line_search.split("\\s").length > 1){
+            specification = where(specification).and(
+                    modelCustomSpec.findLike("modelName", line_search.split("\\s")[1])
             );
         }
-        specification = where(specification).and(
-                modelCustomSpec.findLike("modelName", line_search.split("\\s")[1])
-        );
         return specification;
     }
 
     public Specification<Model> findByType(String line_search, Specification<Model> specification) {
-
-        for (Line line1 : lineService.findAllByName(line_search)) {
-            specification = where(specification).or(
-                    modelCustomSpec.findEq("line", line1)
-            );
+        try {
+            for (Line line1 : lineService.findAllByName(line_search)) {
+                specification = where(specification).or(
+                        modelCustomSpec.findEq("line", line1)
+                );
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Не удалось найти линейки с таким именем");
         }
         return specification;
     }
 
+    //key_one::value_oneXkey_two::value_two
     public Specification<Parameters> findParameters(String param) {
         Specification<Parameters> specification = where(null);
         for (String key_value : param.split("X")) {
@@ -154,10 +184,14 @@ public class ModelService {
     }
 
     public Specification<Model> findSpecModelWithParam(Specification<Model> specification_model, Specification<Parameters> specification_param) {
-        for (Parameters parameters : parametersService.findAll(specification_param)) {
-            specification_model = where(specification_model).and(
-                    modelCustomSpec.findEq("id", parameters.getModel().getId())
-            );
+        try {
+            for (Parameters parameters : parametersService.findAll(specification_param)) {
+                specification_model = where(specification_model).and(
+                        modelCustomSpec.findEq("id", parameters.getModel().getId())
+                );
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Не удалось найти нужные параметры");
         }
         return specification_model;
     }

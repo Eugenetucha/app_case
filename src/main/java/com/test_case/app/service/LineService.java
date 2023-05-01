@@ -4,6 +4,7 @@ import com.test_case.app.model.dto.AddDTO;
 import com.test_case.app.model.entity.Line;
 import com.test_case.app.model.entity.Model;
 import com.test_case.app.repository.LineRepository;
+import com.test_case.app.repository.ModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ public class LineService {
     @Autowired
     private LineRepository lineRepository;
     @Autowired
-    private ModelService modelService;
-    public void saveAndFlush(Line line){
+    private ModelRepository modelRepository;
+
+    public void saveAndFlush(Line line) {
         lineRepository.saveAndFlush(line);
     }
 
@@ -30,15 +32,13 @@ public class LineService {
         line.setCredit(dto.getLineDTO().getCredit());
         List<Model> modelList = new ArrayList<>();
         for (Long id : dto.getLineDTO().getModelList()) {
-            if (modelService.findById(id).isPresent()) {
-                modelList.add(modelService.findById(id).get());
+            if (modelRepository.findById(id).isPresent()) {
+                modelList.add(modelRepository.findById(id).get());
             }
         }
         line.setModelList(modelList);
     }
 
-    //todo поменять тут и не только чтобы везде кроме самих внтруков сервайса исполдьзовались сервисы
-    //проверить на нулевые значения
     public List<Line> findAllByName(String value) {
         return lineRepository.findAllByName(value);
     }

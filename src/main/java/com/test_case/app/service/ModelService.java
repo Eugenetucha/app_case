@@ -70,7 +70,7 @@ public class ModelService {
             log.error(e.getMessage());
         }
     }
-
+    //todo переписать readme и сделать миграцию данных
     //price_l::price_hf
     public List<ModelDTO> getListWithParam(String name,
                                            String type,

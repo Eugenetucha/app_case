@@ -35,12 +35,14 @@ public class UniversalController {
 
     @Operation(summary = "Регистрация")
     @PostMapping("/registration")
-    public RedirectView addUser(@ModelAttribute("employee") User user) {
+    public RedirectView addUser(@ModelAttribute("User") User user) {
 
         try {
             if (userService.loadUserByUsername(user.getUsername()) == null) {
                 try {
                     user.setRole("user");
+                    log.info(user.getUsername());
+                    log.info(user.getPassword());
                     user.setAccountNonLocked(true);
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
                     userService.saveUser(user);

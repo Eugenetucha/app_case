@@ -4,6 +4,7 @@ package com.test_case.app.model.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -15,7 +16,8 @@ import javax.validation.constraints.NotEmpty;
 @Table(name="users")
 public class User implements GrantedAuthority  {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "incrementDomain")
+    @GenericGenerator(name = "incrementDomain", strategy = "increment")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     @Column

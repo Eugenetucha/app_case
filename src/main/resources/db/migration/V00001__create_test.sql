@@ -223,3 +223,6 @@ CREATE TABLE IF NOT EXISTS public.users
 
 ALTER TABLE IF EXISTS public.users
     OWNER to postgres;
+INSERT INTO public.users(
+    id, is_non_locket, password, role, username)
+VALUES (0, true, '$2a$10$G8w3ST7Uwb73pkSfc.ePBOCDtYksOqJ9ilXfLlPrkm4s3O5p6zD5.', 'user', '123');

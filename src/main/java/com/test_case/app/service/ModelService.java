@@ -163,7 +163,7 @@ public class ModelService {
     }
 
     //key_one::value_oneXkey_two::value_two
-    public Specification<Parameters> findParameters(String param) {
+    public List<Parameters> findParameters(String param) {
         Specification<Parameters> specification = where(null);
         for (String key_value : param.split("X")) {
             String key = key_value.split("::")[0];
@@ -175,18 +175,18 @@ public class ModelService {
                     parametersCustomSpec.findLike("value", value)
             );
         }
-        return specification;
+        return parametersService.findAll(specification);
     }
 
     public Optional<Model> findById(Long id) {
         return modelRepository.findById(id);
     }
 
-    public Specification<Model> findSpecModelWithParam(Specification<Model> specification_model, Specification<Parameters> specification_param) {
+    public Specification<Model> findSpecModelWithParam(Specification<Model> specification_model, List<Parameters> parameters) {
         try {
-            for (Parameters parameters : parametersService.findAll(specification_param)) {
-                specification_model = where(specification_model).and(
-                        modelCustomSpec.findEq("id", parameters.getModel().getId())
+            for (Parameters parameter : parameters) {
+                specification_model = where(specification_model).or(
+                        modelCustomSpec.findEq("id", parameter.getModel().getId())
                 );
             }
         } catch (RuntimeException e) {
